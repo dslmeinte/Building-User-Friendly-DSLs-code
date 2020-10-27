@@ -1,6 +1,6 @@
 {
   "name": "DSLs-Made-Easy-code",
-  "version": "0.1.0",
+  "version": "0.2.0-dev",
   "description": "Repo of all code from my book Domain-Specific Languages Made Easy, for the purposes of sharing pre-publication.",
   "repository": {
     "type": "git",
@@ -11,5 +11,14 @@
   "bugs": {
     "url": "https://github.com/dslmeinte/DSLs-Made-Easy-code/issues"
   },
-  "homepage": "https://www.manning.com/books/domain-specific-languages-made-easy"
+  "homepage": "https://www.manning.com/books/domain-specific-languages-made-easy",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mobx": "^6.0.1",
+    "mobx-react": "^7.0.0",
+    "parcel-bundler": "^1.12.4",
+    "react": "^16.8.0",
+    "react-dom": "^17.0.1",
+    "shortid": "^2.2.16"
+  }
 }

@@ -1,7 +1,6 @@
-/.cache
+.cache
 /.idea
-/dev
-/dist
+dist
 /node_modules
 /package-lock.json
 /src/backend/data/asts.json
