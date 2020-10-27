@@ -1,0 +1,22 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 24pt;
+}
+
+span.keyword {
+    font-weight: bolder;
+    color: rgb(100, 100, 100);
+}
+
+span.value {
+    padding-left: 0.15em;
+    padding-right: 0.25em;
+    background-color: rgb(228, 228, 228);
+    border-radius: 5px;
+}
+
+div.attributes {
+    margin-top: 1em;
+    margin-left: 1em;
+}
+
