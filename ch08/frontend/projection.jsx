@@ -1,46 +1,31 @@
 import React from "react"
-import { render } from "react-dom"
-import { observable, action } from "mobx"
+import { action, observable } from "mobx"
 import { observer } from "mobx-react"
 
-require("./styling.css")
-
-import rental from "../../ch03/listing3.2"
-
-
-const indefiniteArticleFor = (nextword) => "a" + ((typeof nextword === "string" && nextword.match(/^[aeiou]/)) ? "n" : "")
-
-
-import { isAstObject } from "../../ch03/ast"
-import { TextValue, NumberValue, DropDownValue } from "./value-components"
-
-const placeholderAstObject = "<placeholder for an AST object>"
-
-// pre-add an attribute for quick testing:
-rental.settings["attributes"].push({
-    concept: "Data Attribute",
-    settings: {
-        "name": "new attribute",
-        "type": "amount",
-        // emulate "+ initial value" already being clicked, and Attribute Reference already chosen:
-        "initial value": {
-            "concept": "Attribute Reference",
-            "settings": {}
-        }
-    }
-})
+import { isAstObject } from "../ast"
+import { Selectable } from "./selectable"
+import { DropDownValue, NumberValue, TextValue } from "./value-components"
 
 
 const AddNewButton = ({ buttonText, actionFunction }) =>
     <button
         className="add-new"
         tabIndex={-1}
-        onClick={action((_) => {
+        onClick={action((event) => {
+            event.stopPropagation()
             actionFunction()
         })}
     >{buttonText}</button>
 
-const Projection = observer(({ value, ancestors }) => {
+
+const indefiniteArticleFor = (nextWord) => "a" + ((typeof nextWord === "string" && nextWord.match(/^[aeiou]/)) ? "n" : "")
+
+import { generate as newId } from "shortid"
+
+const placeholderAstObject = "<placeholder for an AST object>"
+
+
+export const Projection = observer(({ value, deleteValue, ancestors }) => {
     if (isAstObject(value)) {
         const { settings } = value
         const editStateFor = (propertyName) => observable({
@@ -53,7 +38,7 @@ const Projection = observer(({ value, ancestors }) => {
             case "Attribute Reference": {
                 const recordType = ancestors.find((ancestor) => ancestor.concept === "Record Type")
                 const attributes = recordType.settings["attributes"]
-                return <div className="inline">
+                return <Selectable className="inline" astObject={value} deleteAstObject={deleteValue}>
                     <span className="keyword">the </span>
                     <DropDownValue
                         editState={observable({
@@ -61,23 +46,19 @@ const Projection = observer(({ value, ancestors }) => {
                             value: settings["attribute"] && settings["attribute"].ref.settings["name"],
                             inEdit: false,
                             setValue: (newValue) => {
-                                // Always make a new reference object, instead of just setting .ref, because the reference relation might not exist yet:
                                 settings["attribute"] = {
                                     ref: attributes.find((attribute) => attribute.settings["name"] === newValue)
                                 }
-                                // Note: this object is automatically observable, because the whole AST is deeply-observable.
-                                // In fact: because the value of ref is already observable, ref is effectively decorated as 'observable.ref'.
                             }
                         })}
                         className="data-reference"
                         options={attributes.map((attribute) => attribute.settings["name"])}
-                        // Provide a placeholder for an unset reference relation:
                         actionText="(choose an attribute to reference)"
                         placeholderText="<attribute>"
                     />
-                </div>
+                </Selectable>
             }
-            case "Data Attribute": return <div className="attribute">
+            case "Data Attribute": return <Selectable className="attribute" astObject={value} deleteAstObject={deleteValue}>
                 <span className="keyword">the</span>&nbsp;
                 <TextValue editState={editStateFor("name")} placeholderText="<name>" />&nbsp;
                 <span className="keyword">is {indefiniteArticleFor(settings["type"])}</span>&nbsp;
@@ -95,10 +76,11 @@ const Projection = observer(({ value, ancestors }) => {
                                 editState={observable({
                                     inEdit: true,
                                     setValue: (newValue) => {
-                                        settings["initial value"] = {
+                                        settings["initial value"] = observable({
+                                            id: newId(),
                                             concept: newValue,
                                             settings: {}
-                                        }
+                                        })
                                     }
                                 })}
                                 options={[
@@ -108,33 +90,42 @@ const Projection = observer(({ value, ancestors }) => {
                                 placeholderText="<initial value>"
                                 actionText="(choose concept for initial value)"
                             />
-                            : <Projection value={settings["initial value"]} ancestors={[ value, ...ancestors ]} />
+                            : <Projection value={settings["initial value"]} ancestors={[ value, ...ancestors ]}
+                                          deleteValue={() => {
+                                              delete settings["initial value"]
+                                          }}
+                            />
                         }
                     </div>
                     : <AddNewButton buttonText="+ initial value" actionFunction={() => {
                         settings["initial value"] = placeholderAstObject
                     }} />
                 }
-            </div>
+            </Selectable>
             case "Number Literal": {
                 const attribute = ancestors.find((ancestor) => ancestor.concept === "Data Attribute")
                 const attributeType = attribute.settings["type"]
-                return <div className="inline">
+                return <Selectable className="inline" astObject={value} deleteAstObject={deleteValue}>
                     {attributeType === "amount" && <span className="keyword">$</span>}
                     <NumberValue editState={editStateFor("value")} placeholderText="<number>" />
                     {attributeType === "percentage" && <span className="keyword">%</span>}
                     {attributeType === "period in days" && <span className="keyword">&nbsp;days</span>}
-                </div>
+                </Selectable>
             }
-            case "Record Type": return <div>
+            case "Record Type": return <Selectable astObject={value}>
                 <div>
                     <span className="keyword">Record Type</span>&nbsp;
                     <TextValue editState={editStateFor("name")} placeholderText="<name>" />
                 </div>
                 <div className="attributes">
                     <div><span className="keyword">attributes:</span></div>
-                    {settings["attributes"].map((attribute, index) => 
-                        <Projection value={attribute} key={index} ancestors={[ value, ...ancestors ]} />
+                    {settings["attributes"].map((attribute, index) =>
+                        <Projection value={attribute} key={index} ancestors={[ value, ...ancestors ]}
+                                    deleteValue={() => {
+                                        // Remove this attribute from the list:
+                                        settings["attributes"].splice(index, 1)
+                                    }}
+                        />
                     )}
                     <AddNewButton buttonText="+ attribute" actionFunction={() => {
                         settings["attributes"].push({
@@ -143,7 +134,7 @@ const Projection = observer(({ value, ancestors }) => {
                         })
                     }} />
                 </div>
-            </div>
+            </Selectable>
             default: return <div>
                 <em>{"No projection defined for concept: " + value.concept}</em>
             </div>
@@ -151,10 +142,4 @@ const Projection = observer(({ value, ancestors }) => {
     }
     return <em>{"No projection defined for value: " + value}</em>
 })
-
-
-render(
-    <Projection value={observable(rental)} ancestors={[]} />,
-    document.getElementById("root")
-)
 

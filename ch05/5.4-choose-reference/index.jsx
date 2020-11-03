@@ -94,6 +94,3 @@ render(
     document.getElementById("root")
 )
 
-
-require("../../../src/frontend/grayscale")
-

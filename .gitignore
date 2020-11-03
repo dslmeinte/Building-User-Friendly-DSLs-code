@@ -3,7 +3,5 @@
 dist
 /node_modules
 /package-lock.json
-/src/backend/data/asts.json
-/src/test/tmp/*
 /yarn.lock
 /yarn-error.log
