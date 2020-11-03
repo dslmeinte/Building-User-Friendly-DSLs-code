@@ -3,7 +3,7 @@ const http = require("http")
 const { join } = require("path")
 
 const { deserialize } = require("../ast")
-const { generateIndexJsx } = require("../generator/generator")
+const { generatedIndexJsx } = require("./generator")
 
 const options = { encoding: "utf8" }
 
@@ -21,7 +21,7 @@ http.request({
     })
     response.on("end", () => {
         const ast = deserialize(JSON.parse(serializedAst))
-        writeFileSync(indexJsxPath, generateIndexJsx(ast), options)
+        writeFileSync(indexJsxPath, generatedIndexJsx(ast), options)
     })
 }).end()
 

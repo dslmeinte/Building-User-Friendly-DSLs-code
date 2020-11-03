@@ -103,5 +103,6 @@ readFile(astPath, options, (_, data) => {
 })
 
 
-module.exports.generateIndexJsx = (ast) => asString(indexJsx(ast))
+// export to be able to do last two exercises in chapter:
+module.exports.generatedIndexJsx = (ast) => asString(indexJsx(ast))
 
