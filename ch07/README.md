@@ -1,4 +1,4 @@
-# Chapter 7
+# Code from chapter 7
 
 * [Create the “Rental” example AST with random IDs (listing 7.8)](./Rental-AST-with-IDs.js).
 

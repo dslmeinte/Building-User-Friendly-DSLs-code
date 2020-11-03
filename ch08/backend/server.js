@@ -25,7 +25,13 @@ readFile(contentsPath, options, (_, data) => {
         response.send()
     })
 
-    // TODO  add route for generation
+    // endpoint to generate src/runtime/index.jsx from contents:
+    const { generateIndexJsx } = require("../generator/generator")
+    const { deserialize } = require("../ast")
+    server.get("/ast/indexJsx", (request, response) => {
+        response.set('Content-Type', 'text/plain')
+        response.send(generateIndexJsx(deserialize(contents)))
+    })
 
     // needs to be after /ast routes:
     const Parcel = require("parcel-bundler")

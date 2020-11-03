@@ -36,26 +36,6 @@ const initAssignment = (attribute, objectName) => {
     }`
 }
 
-const formFieldInput = (type, objectExpr, fieldName) => `<Input type="${type}" object={${objectExpr}} fieldName="${fieldName}" />`
-
-const formFieldInputs = (attribute, objectExpr) => {
-    const { settings } = attribute
-    const { type } = settings
-    const fieldName = camelCase(settings["name"])
-    switch (type) {
-        case "amount": return "$ " + formFieldInput("number", objectExpr, fieldName)
-        case "percentage": return formFieldInput("number", objectExpr, fieldName) + " %"
-        case "period in days": return [ "from", "to" ].map((subFieldName) => formFieldInput("date", `${objectExpr}.${fieldName}`, subFieldName))
-        default: return `// src/generator/generator.js#formFieldInputs(..) doesn't handle type "${type}"`
-    }
-}
-
-const formField = (attribute, objectExpr) => [
-    `<FormField label="${withFirstUpper(attribute.settings["name"])}">`,
-    indent(1)(formFieldInputs(attribute, objectExpr)),
-    `</FormField>`
-]
-
 const indexJsx = (recordType) => {
     const name = camelCase(recordType.settings["name"])
     const Name = withFirstUpper(name)
@@ -76,16 +56,28 @@ const new${Name} = () => {
     `    return ${name}
 }
 
-const ${Name}Form = observer(({ ${name} }) => <div className="form">
-    <form>`,
-        indent(2)(attributes.map((attribute) => formField(attribute, name))),
-    `    </form>
+const RentalForm = observer(({ rental }) => <div className="form">
+    <form>
+        <FormField label="Rental period">
+            <Input type="date" object={rental.rentalPeriod} fieldName="from" />
+            <Input type="date" object={rental.rentalPeriod} fieldName="to" />
+        </FormField>
+        <FormField label="Rental price before discount">
+            $ <Input type="number" object={rental} fieldName="rentalPriceBeforeDiscount" />
+        </FormField>
+        <FormField label="Discount">
+            <Input type="number" object={rental} fieldName="discount" /> %
+        </FormField>
+        <FormField label="Rental price after discount">
+            $ <Input type="number" object={rental} fieldName="rentalPriceAfterDiscount" />
+        </FormField>
+    </form>
 </div>)
 
-const ${name} = observable(new${Name}())
+const rental = observable(newRental())
 
 const App = observer(() => <div>
-    <${Name}Form ${name}={${name}} />
+    <RentalForm rental={rental} />
 </div>)
 
 render(
@@ -101,7 +93,4 @@ readFile(astPath, options, (_, data) => {
     const deserializedAst = deserialize(serializedAst)
     writeFileSync(indexJsxPath, asString(indexJsx(deserializedAst)), options)
 })
-
-
-module.exports.generateIndexJsx = (ast) => asString(indexJsx(ast))
 
