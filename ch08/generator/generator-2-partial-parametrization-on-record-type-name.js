@@ -56,10 +56,6 @@ render(
     <App />,
     document.getElementById("root")
 )
-
-
-require("../../../src/frontend/grayscale")
-
 `
 }
 
