@@ -1,17 +1,4 @@
-const { readFile, writeFileSync } = require("fs")
-const { join } = require("path")
-const { deserialize } = require("../ast")
-
-const options = { encoding: "utf8" }
-
-const astPath = join(__dirname, "../backend/contents.json")
-const indexJsxPath = join(__dirname, "../runtime/index.jsx")
-
 const indexJsx = (recordType) => {
-    const { camelCase, withFirstUpper } = require("./template-utils")
-    const name = camelCase(recordType.settings["name"])
-    const Name = withFirstUpper(name)
-
     return `import React from "react"
 import { render } from "react-dom"
 import { observable } from "mobx"
@@ -20,13 +7,13 @@ import { FormField, Input } from "./components"
 
 require("./styling.css")
 
-const new${Name} = () => {
-    const ${name} = {}
-    ${name}.rentalPeriod = { from: Date.now(), to: Date.now() }
-    ${name}.rentalPriceBeforeDiscount = "0.0"
-    ${name}.discount = "0"
-    ${name}.rentalPriceAfterDiscount = ${name}.rentalPriceBeforeDiscount
-    return ${name}
+const newRental = () => {
+    const rental = {}
+    rental.rentalPeriod = { from: Date.now(), to: Date.now() }
+    rental.rentalPriceBeforeDiscount = "0.0"
+    rental.discount = "0"
+    rental.rentalPriceAfterDiscount = rental.rentalPriceBeforeDiscount
+    return rental
 }
 
 const RentalForm = observer(({ rental }) => <div className="form">
@@ -60,9 +47,5 @@ render(
 `
 }
 
-readFile(astPath, options, (_, data) => {
-    const serializedAst = JSON.parse(data)
-    const deserializedAst = deserialize(serializedAst)
-    writeFileSync(indexJsxPath, indexJsx(deserializedAst), options)
-})
+module.exports.generatedIndexJsx = indexJsx
 

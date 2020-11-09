@@ -5,13 +5,15 @@ const camelCase = (str) => str
     .toLowerCase()
     .replace(/ ([a-z])/g, (_, ch) => ch.toUpperCase())
     .replace(" ", "")
+module.exports.camelCase = camelCase
 
 /**
  * @returns {string} - the given string with the first character converted to upper case (if possible).
  */
 const withFirstUpper = (str) => str.charAt(0).toUpperCase() + str.substring(1)
+module.exports.withFirstUpper = withFirstUpper
 
-
+// The following is part of a reference solution for the last exercise of section §8.4.3:
 /**
  * @returns {function(*=): *} - a function that maps over a single string using mapString or an array of strings using mapStrings.
  * If an array is given, that array is completely (i.e.: recursively) flattened first, before the mapStrings function is applied.
@@ -26,13 +28,14 @@ const withNewlineEnsured = (str) => str + (str.endsWith("\n") ? "" : "\n")
 /**
  * @returns {string} - the given nested string joined as one string, taking care of proper newline endings.
  */
-// const asString = mapNestedString(withNewlineEnsured, (strings) => strings.map(withNewlineEnsured).join(""))
 const asString = (nestedString) => Array.isArray(nestedString)
     ? nestedString.flat(Infinity)
         .map(withNewlineEnsured)
         .join("")
     : withNewlineEnsured(nestedString)
-
+// For the last exercise of section §8.4.3:
+// const asString = mapNestedString(withNewlineEnsured, (strings) => strings.map(withNewlineEnsured).join(""))
+module.exports.asString = asString
 
 /**
  * @returns {function} - a function to indent a nested string.
@@ -42,19 +45,14 @@ const indent = (indentLevel) => {
     const indentationPrefix = "    ".repeat(indentLevel)
     const indentLine = (str) => indentationPrefix + str
     // const indentLine = (str) => str.split("\n").map((line) => (line.length > 0 ? indentationPrefix : "") + line).join("\n")
+    // For the last exercise of section §8.4.3:
+    // return mapNestedString(indentLine, (strings) => strings.map(indentLine))
+    // Alternatively, using another nested function:
     // const flatten = mapNestedString((string) => [string], string => string)
     // return (nestedString) => flatten(nestedString).map(indentLine)
-    // return mapNestedString(indentLine, (strings) => strings.map(indentLine))
     return (nestedString) => Array.isArray(nestedString)
         ? nestedString.flat(Infinity).map(indentLine)
         : indentLine(nestedString)
 }
-
-
-module.exports = {
-    "asString": asString,
-    "camelCase": camelCase,
-    "indent": indent,
-    "withFirstUpper": withFirstUpper
-}
+module.exports.indent = indent
 

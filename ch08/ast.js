@@ -1,6 +1,10 @@
 const isObject = (value) => (!!value) && (typeof value === "object") && !Array.isArray(value)
+
 const isAstObject = (value) => isObject(value) && ("concept" in value) && ("settings" in value)
+module.exports.isAstObject = isAstObject
+
 const isAstReference = (value) => isObject(value) && ("ref" in value)
+module.exports.isAstReference = isAstReference
 
 
 function serialize(value) {
@@ -26,6 +30,7 @@ function serialize(value) {
     }
     return value
 }
+module.exports.serialize = serialize
 
 
 const isSerializedAstReference = (value) => isObject(value) && ("refId" in value)
@@ -67,18 +72,11 @@ const makeDeserialize = (modify) => (serializedAst) => {
     return deserializedAst
 }
 
-const deserialize = makeDeserialize((o) => o)
+
+module.exports.deserialize = makeDeserialize((o) => o)
+
 
 const { observable } = require("mobx")
 
-const deserializeObservably = makeDeserialize(observable)
-
-
-module.exports = {
-    "isAstObject": isAstObject,
-    "isAstReference": isAstReference,
-    "serialize": serialize,
-    "deserialize": deserialize,
-    "deserializeObservably": deserializeObservably
-}
+module.exports.deserializeObservably = makeDeserialize(observable)
 

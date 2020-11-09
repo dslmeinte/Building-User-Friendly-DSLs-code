@@ -1,12 +1,3 @@
-const { readFile, writeFileSync } = require("fs")
-const { join } = require("path")
-const { deserialize } = require("../ast")
-
-const options = { encoding: "utf8" }
-
-const astPath = join(__dirname, "../backend/contents.json")
-const indexJsxPath = join(__dirname, "../runtime/index.jsx")
-
 const indexJsx = (recordType) => {
     const { camelCase, withFirstUpper } = require("./template-utils")
     const name = camelCase(recordType.settings["name"])
@@ -15,7 +6,7 @@ const indexJsx = (recordType) => {
     const defaultInitExpressionForType = (type) => {
         switch (type) {
             case "period in days": return `{ from: Date.now(), to: Date.now() }`
-            default: return `// [GENERATION PROBLEM] type "${type}" isn't handled`
+            default: return `// [GENERATION PROBLEM] type "${type}" isn't handled for default initialization expression`
         }
     }
 
@@ -39,7 +30,7 @@ require("./styling.css")
 
 const new${Name} = () => {
     const ${name} = {}
-${recordType.settings["attributes"].map((attribute) => initAssignment(attribute))}
+${recordType.settings["attributes"].map((attribute) => `    ${initAssignment(attribute)}`).join("\n")}
     return ${name}
 }
 
@@ -74,9 +65,5 @@ render(
 `
 }
 
-readFile(astPath, options, (_, data) => {
-    const serializedAst = JSON.parse(data)
-    const deserializedAst = deserialize(serializedAst)
-    writeFileSync(indexJsxPath, indexJsx(deserializedAst), options)
-})
+module.exports.generatedIndexJsx = indexJsx
 

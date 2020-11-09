@@ -23,17 +23,20 @@
 * [The generator code](./generator).
     Run the standalone code generator as follows:
 
-        $ node generator/generator.js
+        $ node generator/generate.js
 
     It retrieves the AST from the ["disk storage" of the backend](./backend/contents.json).
     Note that this overwrites the contents of [`src/runtime/index.jsx`](./src/runtime/index.jsx).
+
+    The files with names of the form `src/generator/generator-<n>-<description>` represent intermediate versions of the code, corresponding to changes made in the chapter's text.
+    The generator takes an optional argument of the form `indexJsx-template-<nn>-<description>.js`, which must be the name of a file in [`src/generator/`](./src/generator/).
+    This runs the generator with the specified intermediate version of [`src/generator/indexJsx-template.js`](./src/generator/indexJsx-template.js).
 
     Alternatively, run
 
         $ node generator/generate-retrieve-ast-from-backend.js
 
     to generate [`src/runtime/index.jsx`](./src/runtime/index.jsx) from an AST stored in a running backend.
-    This is the solution to the second-last exercise exercise.
+    This is the solution to the second-last exercise.
 
-    The files with names of the form `src/generator/generator-<n>-<description>` represent intermediate stages of the code.
 

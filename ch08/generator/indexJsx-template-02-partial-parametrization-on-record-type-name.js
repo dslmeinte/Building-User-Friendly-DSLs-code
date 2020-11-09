@@ -1,12 +1,3 @@
-const { readFile, writeFileSync } = require("fs")
-const { join } = require("path")
-const { deserialize } = require("../ast")
-
-const options = { encoding: "utf8" }
-
-const astPath = join(__dirname, "../backend/contents.json")
-const indexJsxPath = join(__dirname, "../runtime/index.jsx")
-
 const indexJsx = (recordType) => {
     const Name = recordType.settings["name"]
     const name = Name.toLowerCase()
@@ -59,9 +50,5 @@ render(
 `
 }
 
-readFile(astPath, options, (_, data) => {
-    const serializedAst = JSON.parse(data)
-    const deserializedAst = deserialize(serializedAst)
-    writeFileSync(indexJsxPath, indexJsx(deserializedAst), options)
-})
+module.exports.generatedIndexJsx = indexJsx
 

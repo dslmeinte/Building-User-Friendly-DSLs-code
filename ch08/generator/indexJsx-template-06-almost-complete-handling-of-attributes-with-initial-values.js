@@ -1,12 +1,3 @@
-const { readFile, writeFileSync } = require("fs")
-const { join } = require("path")
-const { deserialize } = require("../ast")
-
-const options = { encoding: "utf8" }
-
-const astPath = join(__dirname, "../backend/contents.json")
-const indexJsxPath = join(__dirname, "../runtime/index.jsx")
-
 const indexJsx = (recordType) => {
     const { camelCase, withFirstUpper } = require("./template-utils")
     const name = camelCase(recordType.settings["name"])
@@ -15,19 +6,15 @@ const indexJsx = (recordType) => {
     const defaultInitExpressionForType = (type) => {
         switch (type) {
             case "period in days": return `{ from: Date.now(), to: Date.now() }`
-            default: return `// [GENERATION PROBLEM] type "${type}" isn't handled`
+            default: return `// [GENERATION PROBLEM] type "${type}" isn't handled for default initialization expression`
         }
     }
 
     const initAssignment = (attribute) => {
         const { settings } = attribute
         const initialValue = settings["initial value"]
-        const initExpressionForExpression = () => {
+        const initExpressionForInitialValue = () => {
             switch (initialValue.concept) {
-                case "Attribute Reference": {
-                    const targetAttribute = initialValue.settings["attribute"].ref
-                    return `${name}.${camelCase(targetAttribute.settings["name"])}`
-                }
                 case "Number Literal": return `"${initialValue.settings["value"]}"`
                 default: return `// [GENERATION PROBLEM] initial value of concept "${initialValue.concept}" isn't handled`
             }
@@ -35,7 +22,7 @@ const indexJsx = (recordType) => {
 
         return `${name}.${camelCase(settings["name"])} = ${
             initialValue
-                ? initExpressionForExpression(initialValue)
+                ? initExpressionForInitialValue(initialValue)
                 : defaultInitExpressionForType(settings["type"])
         }`
     }
@@ -85,9 +72,5 @@ render(
 `
 }
 
-readFile(astPath, options, (_, data) => {
-    const serializedAst = JSON.parse(data)
-    const deserializedAst = deserialize(serializedAst)
-    writeFileSync(indexJsxPath, indexJsx(deserializedAst), options)
-})
+module.exports.generatedIndexJsx = indexJsx
 

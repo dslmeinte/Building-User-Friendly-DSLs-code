@@ -1,14 +1,6 @@
-const { readFile, writeFileSync } = require("fs")
-const { join } = require("path")
-const { deserialize } = require("../ast")
-const { camelCase, withFirstUpper } = require("./template-utils")
+const { asString, camelCase, withFirstUpper } = require("./template-utils")
 
-const options = { encoding: "utf8" }
-
-const astPath = join(__dirname, "../backend/contents.json")
-const indexJsxPath = join(__dirname, "../runtime/index.jsx")
-
-const initExpressionForExpression = (initialValue, objectName) => {
+const initExpressionForInitialValue = (initialValue, objectName) => {
     switch (initialValue.concept) {
         case "Attribute Reference": {
             const targetAttribute = initialValue.settings["attribute"].ref
@@ -22,16 +14,16 @@ const initExpressionForExpression = (initialValue, objectName) => {
 const defaultInitExpressionForType = (type) => {
     switch (type) {
         case "period in days": return `{ from: Date.now(), to: Date.now() }`
-        default: return `// [GENERATION PROBLEM] type "${type}" isn't handled`
+        default: return `// [GENERATION PROBLEM] type "${type}" isn't handled for default initialization expression`
     }
 }
 
 const initAssignment = (attribute, objectName) => {
     const { settings } = attribute
     const initialValue = settings["initial value"]
-        return `${objectName}.${camelCase(settings["name"])} = ${
+    return `${objectName}.${camelCase(settings["name"])} = ${
         initialValue
-            ? initExpressionForExpression(initialValue, objectName)
+            ? initExpressionForInitialValue(initialValue, objectName)
             : defaultInitExpressionForType(settings["type"])
     }`
 }
@@ -39,8 +31,10 @@ const initAssignment = (attribute, objectName) => {
 const indexJsx = (recordType) => {
     const name = camelCase(recordType.settings["name"])
     const Name = withFirstUpper(name)
+    const { attributes } = recordType.settings
 
-    return `import React from "react"
+    return [
+        `import React from "react"
 import { render } from "react-dom"
 import { observable } from "mobx"
 import { observer } from "mobx-react"
@@ -49,9 +43,9 @@ import { FormField, Input } from "./components"
 require("./styling.css")
 
 const new${Name} = () => {
-    const ${name} = {}
-${recordType.settings["attributes"].map((attribute) => `    ${initAssignment(attribute, name)}`).join("\n")}
-    return ${name}
+    const ${name} = {}`,
+        attributes.map((attribute) => `    ${initAssignment(attribute, name)}`),
+        `    return ${name}
 }
 
 const RentalForm = observer(({ rental }) => <div className="form">
@@ -83,11 +77,8 @@ render(
     document.getElementById("root")
 )
 `
+    ]
 }
 
-readFile(astPath, options, (_, data) => {
-    const serializedAst = JSON.parse(data)
-    const deserializedAst = deserialize(serializedAst)
-    writeFileSync(indexJsxPath, indexJsx(deserializedAst), options)
-})
+module.exports.generatedIndexJsx = (ast) => asString(indexJsx(ast))
 

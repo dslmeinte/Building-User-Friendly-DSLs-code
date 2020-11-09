@@ -1,14 +1,6 @@
-const { readFile, writeFileSync } = require("fs")
-const { join } = require("path")
-const { deserialize } = require("../ast")
 const { asString, camelCase, indent, withFirstUpper } = require("./template-utils")
 
-const options = { encoding: "utf8" }
-
-const astPath = join(__dirname, "../backend/contents.json")
-const indexJsxPath = join(__dirname, "../runtime/index.jsx")
-
-const initExpressionForExpression = (initialValue, objectName) => {
+const initExpressionForInitialValue = (initialValue, objectName) => {
     switch (initialValue.concept) {
         case "Attribute Reference": {
             const targetAttribute = initialValue.settings["attribute"].ref
@@ -22,16 +14,16 @@ const initExpressionForExpression = (initialValue, objectName) => {
 const defaultInitExpressionForType = (type) => {
     switch (type) {
         case "period in days": return `{ from: Date.now(), to: Date.now() }`
-        default: return `// [GENERATION PROBLEM] type "${type}" isn't handled`
+        default: return `// [GENERATION PROBLEM] type "${type}" isn't handled for default initialization expression`
     }
 }
 
 const initAssignment = (attribute, objectName) => {
     const { settings } = attribute
     const initialValue = settings["initial value"]
-        return `${objectName}.${camelCase(settings["name"])} = ${
+    return `${objectName}.${camelCase(settings["name"])} = ${
         initialValue
-            ? initExpressionForExpression(initialValue, objectName)
+            ? initExpressionForInitialValue(initialValue, objectName)
             : defaultInitExpressionForType(settings["type"])
     }`
 }
@@ -46,7 +38,7 @@ const formFieldInputs = (attribute, objectExpr) => {
         case "amount": return "$ " + formFieldInput("number", objectExpr, fieldName)
         case "percentage": return formFieldInput("number", objectExpr, fieldName) + " %"
         case "period in days": return [ "from", "to" ].map((subFieldName) => formFieldInput("date", `${objectExpr}.${fieldName}`, subFieldName))
-        default: return `// src/generator/generator.js#formFieldInputs(..) doesn't handle type "${type}"`
+        default: return `// [GENERATION PROBLEM] type "${type}" isn't handled for form field inputs`
     }
 }
 
@@ -73,13 +65,13 @@ require("./styling.css")
 const new${Name} = () => {
     const ${name} = {}`,
         indent(1)(attributes.map((attribute) => initAssignment(attribute, name))),
-    `    return ${name}
+        `    return ${name}
 }
 
 const ${Name}Form = observer(({ ${name} }) => <div className="form">
     <form>`,
         indent(2)(attributes.map((attribute) => formField(attribute, name))),
-    `    </form>
+        `    </form>
 </div>)
 
 const ${name} = observable(new${Name}())
@@ -96,13 +88,5 @@ render(
     ]
 }
 
-readFile(astPath, options, (_, data) => {
-    const serializedAst = JSON.parse(data)
-    const deserializedAst = deserialize(serializedAst)
-    writeFileSync(indexJsxPath, asString(indexJsx(deserializedAst)), options)
-})
-
-
-// export to be able to do last two exercises in chapter:
 module.exports.generatedIndexJsx = (ast) => asString(indexJsx(ast))
 
