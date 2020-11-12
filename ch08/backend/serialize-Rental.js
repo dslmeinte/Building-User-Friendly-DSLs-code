@@ -1,7 +1,7 @@
 const { writeFileSync } = require("fs")
 const { join } = require("path")
 
-const rental = require("../Rental-AST-with-IDs")
+const rental = require("./Rental-AST")
 const serialize = require("../ast").serialize
 
 writeFileSync(

@@ -26,7 +26,7 @@ readFile(contentsPath, options, (_, data) => {
     })
 
     // endpoint to generate src/runtime/index.jsx from contents:
-    const { generatedIndexJsx } = require("../generator/generator")
+    const { generatedIndexJsx } = require("../generator/indexJsx-template")
     const { deserialize } = require("../ast")
     server.get("/ast/indexJsx", (request, response) => {
         response.set('Content-Type', 'text/plain')
