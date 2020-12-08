@@ -1,0 +1,77 @@
+{
+  "id": "y1QaWFTmC6",
+  "concept": "Record Type",
+  "settings": {
+    "name": "Rental",
+    "attributes": [
+      {
+        "id": "luq3JusxR",
+        "concept": "Data Attribute",
+        "settings": {
+          "name": "attribute 1",
+          "type": "amount",
+          "initial value": {
+            "id": "BwHlNhlEN",
+            "concept": "Attribute Reference",
+            "settings": {
+              "attribute": {
+                "refId": "WrN23gvRS"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "XAx8yTiJl",
+        "concept": "Data Attribute",
+        "settings": {
+          "name": "attribute 2",
+          "type": "amount",
+          "initial value": {
+            "id": "T96SR0UG0",
+            "concept": "Attribute Reference",
+            "settings": {
+              "attribute": {
+                "refId": "luq3JusxR"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "WrN23gvRS",
+        "concept": "Data Attribute",
+        "settings": {
+          "name": "attribute 3",
+          "type": "amount",
+          "initial value": {
+            "id": "imnpYIkIB",
+            "concept": "Attribute Reference",
+            "settings": {
+              "attribute": {
+                "refId": "XAx8yTiJl"
+              }
+            }
+          }
+        }
+      },
+      {
+        "id": "eUDcBFmgx",
+        "concept": "Data Attribute",
+        "settings": {
+          "name": "attribute 4",
+          "type": "amount",
+          "initial value": {
+            "id": "cGKU_LWLg",
+            "concept": "Attribute Reference",
+            "settings": {
+              "attribute": {
+                "refId": "WrN23gvRS"
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}
