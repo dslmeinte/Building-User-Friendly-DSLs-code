@@ -6,7 +6,7 @@
 const fibonacci = (n) => n <= 1 ? n : fibonacci(n - 2) + fibonacci(n - 1)
 
 
-const { equal, throws /*, other assertion functions to import */ } = require("chai").assert
+const { equal } = require("chai").assert
 
 
 describe("recursive functions defined with a `const` declaration", (_) => {
@@ -28,25 +28,4 @@ describe("recursive functions defined with a `const` declaration", (_) => {
 
 })
 
-
-describe("`const` declarations" , (_) => {
-
-    it("error thrown on assigning to a `const`-declared variable twice", (done) => {
-        const foo = {}
-
-        throws(() => {
-            foo = { bar: 1 }    // <-- flagged by IDE?
-        }, TypeError)
-
-        done()
-    })
-
-    it("error not thrown on assigning a key-value-pair to a `const`-declared variable", (done) => {
-        const foo = {}
-        foo.bar = 1             // <-- should not be flagged by IDE
-        equal(foo.bar, 1)
-        done()
-    })
-
-})
 
