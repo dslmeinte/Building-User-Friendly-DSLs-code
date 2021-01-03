@@ -1,0 +1,5 @@
+record type "Rental" having attributes:
+    "rental period": period in days
+    "rental price before discount": amount initially 0.0
+    "discount": percentage initially 0
+    "rental price after discount": amount initially -> "rental price before discount"
