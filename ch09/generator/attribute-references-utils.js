@@ -68,8 +68,10 @@ module.exports.dependencyOrderOf = dependencyOrderOf
 
 /**
  * @param astObjects - an array of AST objects with a string-valued "name" property.
- * @return an array of names (strings).
+ * @return an array of names (strings), with (single) quotes around them.
  */
-const namesOf = (astObjects) => astObjects.map((astObject) => astObject.settings["name"])
-module.exports.namesOf = namesOf
+const nameOf = (astObject) => astObject.settings["name"]
+const quote = (str) => `'${str}'`
+const quotedNamesOf = (astObjects) => astObjects.map(nameOf).map(quote)
+module.exports.quotedNamesOf = quotedNamesOf
 

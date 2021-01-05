@@ -7,14 +7,14 @@ const initExpressionForInitialValue = (initialValue, objectName) => {
             return `${objectName}.${camelCase(targetAttribute.settings["name"])}`
         }
         case "Number Literal": return `"${initialValue.settings["value"]}"`
-        default: return `// [GENERATION PROBLEM] initial value of concept "${initialValue.concept}" isn't handled`
+        default: return `/* [GENERATION PROBLEM] initial value of concept "${initialValue.concept}" isn't handled */`
     }
 }
 
 const defaultInitExpressionForType = (type) => {
     switch (type) {
         case "period in days": return `{ from: Date.now(), to: Date.now() }`
-        default: return `// [GENERATION PROBLEM] type "${type}" isn't handled for default initialization expression`
+        default: return `/* [GENERATION PROBLEM] type "${type}" isn't handled for default initialization expression */`
     }
 }
 

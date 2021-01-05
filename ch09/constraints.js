@@ -1,5 +1,5 @@
 const { isAstReference, placeholderAstObject } = require("./ast")
-const { cycleWith, namesOf } = require("./generator/attribute-references-utils")
+const { cycleWith, quotedNamesOf } = require("./generator/attribute-references-utils")
 const { camelCase } = require("./generator/template-utils")
 
 const isNonEmptyString = (value) => typeof value === "string" && value.trim().length > 0
@@ -20,7 +20,8 @@ const issuesFor = (astObject, ancestors) => {
                 const { type: otherType, name: otherName } = settings["attribute"].ref.settings
                 if (thisType !== undefined && thisType !== otherType) {
                     issues.push(`The types of this attribute and the attribute named '${otherName}' must match,`
-                        + `\n\tbut they are: '${thisType}', resp., '${otherType}'`)
+                        + `\n\tbut they are: '${thisType}', resp., '${otherType}'`
+                    )
                 }
             }
             break
@@ -42,7 +43,7 @@ const issuesFor = (astObject, ancestors) => {
             const cycle = cycleWith(astObject)
             if (cycle.length > 0) {
                 issues.push("This attribute is part of a cycle through attribute references in initial values:\n\t"
-                    + `(${namesOf(cycle).map((name) => `'${name}' -> `).join("")})*`
+                    + quotedNamesOf(cycle).join(" -> ") + " -> [go back to first]..."
                 )
             }
             // Application of option 1 to the situation of §9.3.6:
@@ -52,7 +53,8 @@ const issuesFor = (astObject, ancestors) => {
             )
             if (similarlyNamed.length > 0) {
                 issues.push("This attribute's name is too similar to the following other attributes' names:\n\t"
-                    + namesOf(similarlyNamed).map((name) => `'${name}'`).join(", "))
+                    + quotedNamesOf(similarlyNamed).join(", ")
+                )
             }
             break
         }

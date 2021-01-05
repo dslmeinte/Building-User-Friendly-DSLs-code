@@ -1,6 +1,7 @@
 import React from "react"
 import { action, observable } from "mobx"
 import { observer } from "mobx-react"
+import { generate as newId } from "shortid"
 
 import { isAstObject } from "../ast"
 import { Selectable } from "./selectable"
@@ -19,8 +20,6 @@ const AddNewButton = ({ buttonText, actionFunction }) =>
 
 
 const indefiniteArticleFor = (nextWord) => "a" + ((typeof nextWord === "string" && nextWord.match(/^[aeiou]/)) ? "n" : "")
-
-import { generate as newId } from "shortid"
 
 const placeholderAstObject = "<placeholder for an AST object>"
 
@@ -129,6 +128,7 @@ export const Projection = observer(({ value, deleteValue, ancestors }) => {
                     )}
                     <AddNewButton buttonText="+ attribute" actionFunction={() => {
                         settings["attributes"].push({
+                            id: newId(),
                             concept: "Data Attribute",
                             settings: {}
                         })

@@ -4,12 +4,12 @@ const { dependencyOrderOf } = require("./attribute-references-utils")
 
 const initExpressionForInitialValue = (initialValue, objectName) => {
     switch (initialValue.concept) {
-        // Application of option 2 to situation 1 of the Exercise of §9.1.3:
+        // Application of option 2 to situation 1 of the Exercise of §9.3.2:
         case "Attribute Reference": {
             const targetAttribute = isAstReference(initialValue.settings["attribute"]) && initialValue.settings["attribute"].ref
             return targetAttribute ? `${objectName}.${camelCase(targetAttribute.settings["name"])}` : `/* [GENERATION PROBLEM] attribute reference is undefined */`
         }
-        // Application of option 2 to situation 2 of the Exercise of §9.1.3:
+        // Application of option 2 to situation 2 of the Exercise of §9.3.2:
         case "Number Literal": {
             const value = initialValue.settings["value"]
             return value === undefined ? `/* [GENERATION PROBLEM] number literal's value is undefined */` : `"${initialValue.settings["value"]}"`
@@ -20,6 +20,7 @@ const initExpressionForInitialValue = (initialValue, objectName) => {
 
 const defaultInitExpressionForType = (type) => {
     switch (type) {
+        // The first two cases are the result of doing the last Exercise of § 9.3.1:
         case "amount": return `"0.0"`
         case "percentage": return `"0"`
         case "period in days": return `{ from: Date.now(), to: Date.now() }`
@@ -73,6 +74,7 @@ require("./styling.css")
 
 const new${Name} = () => {
     const ${name} = {}`,
+        // Fix the situations of § 9.3.4 and § 9.3.5:
         indent(1)((dependencyOrderOf(attributes) || attributes).map((attribute) => initAssignment(attribute, name))),
         `    return ${name}
 }
