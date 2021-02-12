@@ -10,3 +10,13 @@ writeFileSync(
     { encoding: "utf8" }
 )
 
+
+writeFileSync(
+    join(__dirname, "data/metaData.json"),
+    "{}",
+    { encoding: "utf8" }
+)
+
+const { setDslVersion } = require("./metaData")
+setDslVersion("v1")
+
