@@ -1,0 +1,133 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 24pt;
+}
+
+span.keyword {
+    font-weight: bolder;
+    color: rgb(100, 100, 100);
+}
+
+span.value {
+    padding-left: 0.15em;
+    padding-right: 0.25em;
+    background-color: rgb(228, 228, 228);
+    border-radius: 5px;
+    white-space: pre;   /* TODO  backpropagate? */
+}
+
+div.attributes {
+    margin-top: 1em;
+    margin-left: 1em;
+}
+
+div.attributes div.attribute {
+    margin-left: 1em;
+}
+
+span.enum-like {   /* TODO  backpropagate! */
+    font-style: italic;
+}
+
+div.inline {
+    display: inline-block;
+}
+
+span.data-reference {
+    font-style: italic;
+    color: blue;
+    text-decoration: underline;
+}
+
+input {
+    font-size: 12pt;
+    border-radius: 5px;
+    border: 3px solid yellow;
+    background-color: lightyellow;
+    padding-left: 5px;
+}
+
+input:focus {
+    outline: none;
+}
+
+select {
+    font-size: 12pt;
+}
+
+button.add-new {
+    font-size: 18pt;
+    border-radius: 10px;
+    border: 0px;
+    background-color: rgb(49, 161, 49);
+    cursor: pointer;
+}
+
+span.value-missing {
+    padding-left: 0.15em;
+    padding-right: 0.25em;
+    background-color: rgb(209, 108, 108);
+    color: lightgray;
+    width: 10em;
+    border-radius: 5px;
+    text-decoration: underline;
+    text-decoration-style: dashed;
+    text-decoration-color: rgb(228, 30, 23);
+}
+
+select option.action {
+    color: lightgray;
+    font-style: italic;
+}
+
+div.selected {
+    background-color: khaki;
+    outline: none;
+}
+
+
+/* grabbed and adapted from: https://tobiasahlin.com/spinkit/ */
+
+div.spinner {
+    width: 40px;
+    height: 40px;
+    margin: 100px auto;
+    background-color: #333;
+    border-radius: 100%;
+    animation: sk-scaleout 1.0s infinite ease-in-out;
+}
+
+@keyframes sk-scaleout {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+        transform: scale(1.0);
+        opacity: 0;
+    }
+}
+
+
+button.save {
+    font-size: 18pt;
+    border-radius: 10px;
+    border: 0px;
+    background-color: rgb(236, 52, 52);
+    cursor: pointer;
+}
+
+
+span.issue-marker {
+    color: red;
+    float: left;
+}
+
+
+.side-transform {
+    display: none;
+}
+
+.side-transformable:hover > .side-transform {
+    display: inline-block;
+}
+
