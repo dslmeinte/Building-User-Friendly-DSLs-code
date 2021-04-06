@@ -11,6 +11,6 @@ Repo of all code from my book Domain-Specific Languages Made Easy, for the purpo
 ## TODOs
 
 * Update all chapters w.r.t. book.
-* Add(/update) `README.md` per chapter, also with CLI commands.
+* &#10003; Add(/update) `README.md` per chapter, also with CLI commands.
 * Configure all NPM deps. 
 
