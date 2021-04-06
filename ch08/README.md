@@ -51,6 +51,7 @@ To run the Domain IDE:
     $ node backend/server.js
 
 The Domain IDE can now be accessed on [`http://localhost:8080/`](http://localhost:8080/).
+_Note:_ the first step initializes the file `backend/data/contents.json`, without making a backup if it already exists!
 Alternatively, run:
 
     $ ./run-Domain-IDE.sh

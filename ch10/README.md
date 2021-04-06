@@ -39,6 +39,7 @@ To run the Domain IDE:
     $ node backend/server.js
 
 The Domain IDE can now be accessed on [`http://localhost:8080/`](http://localhost:8080/).
+_Note:_ the first step initializes the file `backend/data/contents.json`, without making a backup if it already exists!
 Alternatively, run:
 
     $ ./run-Domain-IDE.sh
@@ -70,7 +71,7 @@ The following lists every source file of the Domain IDE, and whether it's DSL-_s
 | | `value-components.jsx` | generic |
 | `src/backend` | `server.js` | aspecific |
 | `src/backend/data` | `version.json` | *specific* |
-| `src/generator` | `attribute-references-utils.js` | *specific* |
+| `src/generator` | `attribute-utils.js` | *specific* |
 | | `generate.js` | generic |
 | | `indexJsx-template.js` | *specific* |
 | | `template-utils.js` | aspecific |
