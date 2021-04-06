@@ -1,5 +1,8 @@
 # Code from chapter 10
 
+
+## Code organization, per file
+
 * [The frontend code](./frontend) - bundled with Parcel, and served through the backend.
     This is (or should be) identical to the frontend code from chapter 8.
 
@@ -25,6 +28,30 @@
 
     It retrieves the AST from the ["disk storage" of the backend](./backend/contents.json).
     Note that this overwrites the contents of [`src/runtime/index.jsx`](./src/runtime/index.jsx).
+
+
+## How to run
+
+To run the Domain IDE:
+
+    $ node backend/serialize-Rental.js
+    $ node migrations.js
+    $ node backend/server.js
+
+The Domain IDE can now be accessed on [`http://localhost:8080/`](http://localhost:8080/).
+Alternatively, run:
+
+    $ ./run-Domain-IDE.sh
+
+To generate the Runtime, and run it:
+
+    $ node generator/generator.js
+    $ npx parcel runtime/index.html
+
+The Runtime can now be accessed on [`http://localhost:1234/`](http://localhost:1234/).
+Alternatively, run:
+
+    $ ./generate-and-run-Runtime.sh
 
 
 ## Exercise 10.3

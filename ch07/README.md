@@ -1,5 +1,8 @@
 # Code from chapter 7
 
+
+## Code organization, per file
+
 * [Create the “Rental” example AST with random IDs (listing 7.8)](./Rental-AST-with-IDs.js).
 
 * [The frontend code](./frontend) - bundled with Parcel, and served through the backend.
@@ -48,4 +51,17 @@
         Run as:
 
            $ ./backend/test-POST-not-implemented.s
+
+
+## How to run
+
+To run the Domain IDE:
+
+    $ node backend/serialize-Rental.js
+    $ node backend/server.js
+
+The Domain IDE can now be accessed on [`http://localhost:8080/`](http://localhost:8080/).
+Alternatively, run:
+
+    $ ./run-Domain-IDE.sh
 
