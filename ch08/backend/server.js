@@ -3,7 +3,7 @@ const { join } = require("path")
 
 const options = { encoding: "utf8" }
 
-const contentsPath = join(__dirname, "contents.json")
+const contentsPath = join(__dirname, "data/contents.json")
 
 let contents = null
 

@@ -28,7 +28,7 @@
 
         $ node generator/generate.js
 
-    It retrieves the AST from the ["disk storage" of the backend](./backend/contents.json).
+    It retrieves the AST from the ["disk storage" of the backend](./backend/data/contents.json).
     Note that this overwrites the contents of [`src/runtime/index.jsx`](./src/runtime/index.jsx).
 
     The files with names of the form `src/generator/generator-<n>-<description>` represent intermediate versions of the code, corresponding to changes made in the chapter's text.

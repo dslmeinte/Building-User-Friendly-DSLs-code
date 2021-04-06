@@ -4,7 +4,7 @@ const { deserialize } = require("../ast")
 
 const options = { encoding: "utf8" }
 
-const astPath = join(__dirname, "../backend/contents.json")
+const astPath = join(__dirname, "../backend/data/contents.json")
 const indexJsxPath = join(__dirname, "../runtime/index.jsx")
 
 /*

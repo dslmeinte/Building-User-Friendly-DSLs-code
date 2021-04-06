@@ -4,7 +4,7 @@ const { deserialize } = require("../ast")
 
 const options = { encoding: "utf8" }
 
-const contentsPath = join(__dirname, "contents.json")
+const contentsPath = join(__dirname, "data/contents.json")
 
 readFile(contentsPath, options, (_, data) => {
     const serializedAst = JSON.parse(data)

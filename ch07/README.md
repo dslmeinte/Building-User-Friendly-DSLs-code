@@ -14,7 +14,7 @@
 
 * Backend files:
 
-    * [The (file containing the) JSON contents persisted on the backend](./backend/contents.json).
+    * [The (file containing the) JSON contents persisted on the backend](./backend/data/contents.json).
 
     * [Listing 7.13: standalone Node.js program to deserialize the JSON contents file to an AST](./backend/deserialize-contents.js).
         Run as:
@@ -24,7 +24,7 @@
     * [Listing 7.2: example JSON contents](./backend/example-contents.json) - not an AST!
 
     * [Listing 7.7: standalone program to "JSONify" the "Rental" example AST](./backend/jsonify-Rental.js).
-        Overwrites [`backend/contents.json`](./backend/contents.json)!
+        Overwrites [`backend/contents.json`](./backend/data/contents.json)!
         This doesn't actually serialize the AST, and breaks for circular ASTs.
         Run as:
 
@@ -36,7 +36,7 @@
             $ ./backend/put-example.sh
 
     * [Listing 7.10: standalone program to properly "JSONify" the "Rental" example AST through serialization](./backend/serialize-Rental.js).
-        Overwrites [`backend/contents.json`](./backend/contents.json)!
+        Overwrites [`backend/contents.json`](./backend/data/contents.json)!
         Run as:
 
            $ node backend/serialize-Rental.js
