@@ -1,29 +1,30 @@
 const { asString, camelCase, indent, withFirstUpper } = require("./template-utils")
 
-const initExpressionForInitialValue = (initialValue, objectName) => {
-    switch (initialValue.concept) {
+const expressionFor = (value) => {
+    const { settings } = value
+    switch (value.concept) {
         case "Attribute Reference": {
-            const targetAttribute = initialValue.settings["attribute"].ref
-            return `${objectName}.${camelCase(targetAttribute.settings["name"])}`
+            const targetAttribute = settings["attribute"].ref
+            return `this.${camelCase(targetAttribute.settings["name"])}`
         }
-        case "Number Literal": return `"${initialValue.settings["value"]}"`
-        default: return `/* [GENERATION PROBLEM] initial value of concept "${initialValue.concept}" isn't handled */`
+        case "Number Literal": return `${settings["value"]}`
+        default: return `/* [GENERATION PROBLEM] value of concept "${value.concept}" isn't handled in expressionFor */`
     }
 }
 
 const defaultInitExpressionForType = (type) => {
     switch (type) {
         case "period in days": return `{ from: Date.now(), to: Date.now() }`
-        default: return `/* [GENERATION PROBLEM] type "${type}" isn't handled for default initialization expression */`
+        default: return `/* [GENERATION PROBLEM] type "${type}" isn't handled in defaultInitExpressionForType */`
     }
 }
 
-const initAssignment = (attribute, objectName) => {
+const classField = (attribute) => {
     const { settings } = attribute
     const initialValue = settings["initial value"]
-    return `${objectName}.${camelCase(settings["name"])} = ${
+    return `${camelCase(settings["name"])} = ${
         initialValue
-            ? initExpressionForInitialValue(initialValue, objectName)
+            ? expressionFor(initialValue)
             : defaultInitExpressionForType(settings["type"])
     }`
 }
@@ -38,7 +39,7 @@ const formFieldInputs = (attribute, objectExpr) => {
         case "amount": return "$ " + formFieldInput("number", objectExpr, fieldName)
         case "percentage": return formFieldInput("number", objectExpr, fieldName) + " %"
         case "period in days": return [ "from", "to" ].map((subFieldName) => formFieldInput("date", `${objectExpr}.${fieldName}`, subFieldName))
-        default: return `// [GENERATION PROBLEM] type "${type}" isn't handled for form field inputs`
+        default: return `// [GENERATION PROBLEM] type "${type}" isn't handled in formFieldInputs`
     }
 }
 
@@ -56,16 +57,17 @@ const indexJsx = (recordType) => {
     return [
         `import React from "react"
 import { render } from "react-dom"
-import { observable } from "mobx"
+import { makeAutoObservable } from "mobx"
 import { observer } from "mobx-react"
 import { FormField, Input } from "./components"
 
 require("./styling.css")
 
-const new${Name} = () => {
-    const ${name} = {}`,
-        indent(1)(attributes.map((attribute) => initAssignment(attribute, name))),
-        `    return ${name}
+class ${Name} {`,
+        indent(1)(attributes.map(classField)),
+        `    constructor() {
+        makeAutoObservable(this)
+    }
 }
 
 const ${Name}Form = observer(({ ${name} }) => <div className="form">
@@ -74,7 +76,7 @@ const ${Name}Form = observer(({ ${name} }) => <div className="form">
         `    </form>
 </div>)
 
-const ${name} = observable(new${Name}())
+const ${name} = new ${Name}()
 
 const App = observer(() => <div>
     <${Name}Form ${name}={${name}} />

@@ -33,31 +33,23 @@ const referencedAttributesIn = (attribute) => {
 
     return reffedAttribs(attribute.settings["value"])
 }
-const _before_referencedAttributesIn = (attribute) => {
-    const value = attribute.settings["value"]
-    if (isAstObject(value) && value.concept === "Attribute Reference") {
-        const refObject = value.settings["attribute"]
-        return isAstReference(refObject) ? [ refObject.ref ] : []
-    }
-    return []
-}
 
 
 /**
  * @param attribute - an AST object with concept label "Attribute".
- * @returns an array with the cycle of attributes through attribute references in values, starting at the given attribute.
- *  An array of length 0 means: the given attribute is not part of a cycle.
+ * @returns an array with a cycle of attributes through attribute references in values, starting at the given attribute.
+ *  An array of length 0 means: the given attribute is not part of any cycle.
  */
 const cycleWith = (attribute) => {
 
-    const visit = (current, visited) => {
-        if (visited.indexOf(current) > -1) {
+    const visit = (current, chain) => {
+        if (chain.indexOf(current) > -1) {
             // Add current to end, so we know what sub-array constitutes the actual cycle:
-            return [ ...visited, current ]
+            return [ ...chain, current ]
         }
-        const newVisited = [ ...visited, current ]
+        const extendedChain = [ ...chain, current ]
         for (const reffedAttribute of referencedAttributesIn(current)) {
-            const recursion = visit(reffedAttribute, newVisited)
+            const recursion = visit(reffedAttribute, extendedChain)
             if (recursion.length > 0) {
                 return recursion
             }
@@ -66,7 +58,7 @@ const cycleWith = (attribute) => {
     }
 
     const result = visit(attribute, [])
-    return result[result.length - 1] === attribute ? result : []
+    return result.length > 0 && result[result.length - 1] === attribute ? result : []
 }
 module.exports.cycleWith = cycleWith
 
@@ -79,20 +71,24 @@ module.exports.cycleWith = cycleWith
 const dependencyOrderOf = (attributes) => {
     const ordered = []
 
-    const visit = (current, visited) => {
+    const visit = (current, chain) => {
         if (ordered.indexOf(current) > -1) {
             return false
         }
-        if (visited.indexOf(current) > -1) {
+        if (chain.indexOf(current) > -1) {
             return true
         }
-        const newVisited = [ ...visited, current ]
-        const hasCycle = referencedAttributesIn(current).some((parent) => visit(parent, newVisited))
+        const extendedChain = [ ...chain, current ]
+        const hasCycle = referencedAttributesIn(current).some(
+            (reffedAttrib) => visit(reffedAttrib, extendedChain)
+        )
         ordered.push(current)
         return hasCycle
     }
 
-    const hasCycle = attributes.some((attribute) => visit(attribute, []))
+    const hasCycle = attributes.some(
+        (attribute) => visit(attribute, [])
+    )
 
     return hasCycle ? false : ordered     // equivalent to: !hasCycle && ordered
 }

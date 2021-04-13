@@ -94,7 +94,7 @@ const { nanoid } = require("nanoid")
 const newId = () => nanoid(10)  // 1% chance of at least 1 collision in ~17 years with 1000 IDs generated per hour
 module.exports.newId = newId
 
-const astObject = (concept, settings) => ({ // TODO  consider renaming to 'newAstObject'
+const astObject = (concept, settings) => ({
     id: newId(),
     concept,
     settings

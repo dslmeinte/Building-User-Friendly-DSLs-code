@@ -1,29 +1,30 @@
-const { asString, camelCase, indent, withFirstUpper } = require("./template-utils")
+const { asString, camelCase, withFirstUpper } = require("./template-utils")
 
-const initExpressionForInitialValue = (initialValue, objectName) => {
-    switch (initialValue.concept) {
+const expressionFor = (value) => {
+    const { settings } = value
+    switch (value.concept) {
         case "Attribute Reference": {
-            const targetAttribute = initialValue.settings["attribute"].ref
-            return `${objectName}.${camelCase(targetAttribute.settings["name"])}`
+            const targetAttribute = settings["attribute"].ref
+            return `this.${camelCase(targetAttribute.settings["name"])}`
         }
-        case "Number Literal": return `"${initialValue.settings["value"]}"`
-        default: return `// [GENERATION PROBLEM] initial value of concept "${initialValue.concept}" isn't handled`
+        case "Number Literal": return `${settings["value"]}`
+        default: return `/* [GENERATION PROBLEM] value of concept "${value.concept}" isn't handled in expressionFor */`
     }
 }
 
 const defaultInitExpressionForType = (type) => {
     switch (type) {
         case "period in days": return `{ from: Date.now(), to: Date.now() }`
-        default: return `// [GENERATION PROBLEM] type "${type}" isn't handled for default initialization expression`
+        default: return `/* [GENERATION PROBLEM] type "${type}" isn't handled in defaultInitExpressionForType */`
     }
 }
 
-const initAssignment = (attribute, objectName) => {
+const classField = (attribute) => {
     const { settings } = attribute
     const initialValue = settings["initial value"]
-    return `${objectName}.${camelCase(settings["name"])} = ${
+    return `${camelCase(settings["name"])} = ${
         initialValue
-            ? initExpressionForInitialValue(initialValue, objectName)
+            ? expressionFor(initialValue)
             : defaultInitExpressionForType(settings["type"])
     }`
 }
@@ -36,16 +37,17 @@ const indexJsx = (recordType) => {
     return [
         `import React from "react"
 import { render } from "react-dom"
-import { observable } from "mobx"
+import { makeAutoObservable } from "mobx"
 import { observer } from "mobx-react"
 import { FormField, Input } from "./components"
 
 require("./styling.css")
 
-const new${Name} = () => {
-    const ${name} = {}`,
-        indent(1)(attributes.map((attribute) => initAssignment(attribute, name))),
-        `    return ${name}
+class ${Name} {`,
+        attributes.map((attribute) => `    ${classField(attribute)}`),
+        `    constructor() {
+        makeAutoObservable(this)
+    }
 }
 
 const RentalForm = observer(({ rental }) => <div className="form">
@@ -66,7 +68,7 @@ const RentalForm = observer(({ rental }) => <div className="form">
     </form>
 </div>)
 
-const rental = observable(newRental())
+const rental = new Rental()
 
 const App = observer(() => <div>
     <RentalForm rental={rental} />

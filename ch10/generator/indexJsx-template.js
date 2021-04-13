@@ -1,39 +1,40 @@
-const { isAstReference } = require("../ast")
+const { isAstObject, isAstReference } = require("../ast")
 const { asString, camelCase, indent, withFirstUpper } = require("./template-utils")
-const { dependencyOrderOf } = require("./attribute-references-utils")
+const { dependencyOrderOf } = require("./attribute-utils")
 
-const initExpressionForInitialValue = (initialValue, objectName) => {
-    switch (initialValue.concept) {
-        // Application of option 2 to situation 1 of the Exercise of §9.3.2:
+const expressionFor = (value) => {
+    if (!isAstObject(value)) {
+        return `/* [GENERATION PROBLEM] value "${value}" isn't handled in expressionFor */`
+    }
+    const { settings } = value
+    switch (value.concept) {
         case "Attribute Reference": {
-            const targetAttribute = isAstReference(initialValue.settings["attribute"]) && initialValue.settings["attribute"].ref
-            return targetAttribute ? `${objectName}.${camelCase(targetAttribute.settings["name"])}` : `/* [GENERATION PROBLEM] attribute reference is undefined */`
+            const targetAttribute = isAstReference(settings["attribute"]) && settings["attribute"].ref
+            return targetAttribute ? `this.${camelCase(targetAttribute.settings["name"])}` : `/* [GENERATION PROBLEM] attribute reference is undefined */`
         }
-        // Application of option 2 to situation 2 of the Exercise of §9.3.2:
         case "Number Literal": {
-            const value = initialValue.settings["value"]
-            return value === undefined ? `/* [GENERATION PROBLEM] number literal's value is undefined */` : `"${initialValue.settings["value"]}"`
+            const numberValue = settings["value"]
+            return numberValue === undefined ? `/* [GENERATION PROBLEM] number literal's value is undefined */` : `${numberValue}`
         }
-        default: return `/* [GENERATION PROBLEM] initial value of concept "${initialValue.concept}" isn't handled */`
+        default: return `/* [GENERATION PROBLEM] value of concept "${value.concept}" isn't handled in expressionFor */`
     }
 }
 
 const defaultInitExpressionForType = (type) => {
     switch (type) {
-        // The first two cases are the result of doing the last Exercise of § 9.3.1:
-        case "amount": return `"0.0"`
-        case "percentage": return `"0"`
+        case "amount": return `0.0`
+        case "percentage": return `0`
         case "period in days": return `{ from: Date.now(), to: Date.now() }`
-        default: return `/* [GENERATION PROBLEM] type "${type}" isn't handled for default initialization expression */`
+        default: return `/* [GENERATION PROBLEM] type "${type}" isn't handled in defaultInitExpressionForType */`
     }
 }
 
-const initAssignment = (attribute, objectName) => {
+const classField = (attribute) => {
     const { settings } = attribute
     const value = settings["value"]
-    return `${objectName}.${camelCase(settings["name"])} = ${
+    return `${camelCase(settings["name"])} = ${
         value
-            ? initExpressionForInitialValue(value, objectName)
+            ? expressionFor(value)
             : defaultInitExpressionForType(settings["type"])
     }`
 }
@@ -48,7 +49,7 @@ const formFieldInputs = (attribute, objectExpr) => {
         case "amount": return "$ " + formFieldInput("number", objectExpr, fieldName)
         case "percentage": return formFieldInput("number", objectExpr, fieldName) + " %"
         case "period in days": return [ "from", "to" ].map((subFieldName) => formFieldInput("date", `${objectExpr}.${fieldName}`, subFieldName))
-        default: return `// [GENERATION PROBLEM] type "${type}" isn't handled for form field inputs`
+        default: return `// [GENERATION PROBLEM] type "${type}" isn't handled in formFieldInputs`
     }
 }
 
@@ -66,17 +67,17 @@ const indexJsx = (recordType) => {
     return [
         `import React from "react"
 import { render } from "react-dom"
-import { observable } from "mobx"
+import { makeAutoObservable } from "mobx"
 import { observer } from "mobx-react"
 import { FormField, Input } from "./components"
 
 require("./styling.css")
 
-const new${Name} = () => {
-    const ${name} = {}`,
-        // Fix the situations of § 9.3.4 and § 9.3.5:
-        indent(1)((dependencyOrderOf(attributes) || attributes).map((attribute) => initAssignment(attribute, name))),
-        `    return ${name}
+class ${Name} {`,
+        indent(1)((dependencyOrderOf(attributes) || attributes).map(classField)),
+        `    constructor() {
+        makeAutoObservable(this)
+    }
 }
 
 const ${Name}Form = observer(({ ${name} }) => <div className="form">
@@ -85,7 +86,7 @@ const ${Name}Form = observer(({ ${name} }) => <div className="form">
         `    </form>
 </div>)
 
-const ${name} = observable(new${Name}())
+const ${name} = new ${Name}()
 
 const App = observer(() => <div>
     <${Name}Form ${name}={${name}} />

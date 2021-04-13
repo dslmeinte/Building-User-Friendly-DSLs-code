@@ -7,7 +7,7 @@ const isAstReference = (value) => isObject(value) && ("ref" in value)
 module.exports.isAstReference = isAstReference
 
 
-function serialize(value) {
+const serialize = (value) => {
     if (isAstObject(value)) {
         const serializedAstObject = {
             id: value.id,
@@ -39,7 +39,7 @@ const makeDeserialize = (modify) => (serializedAst) => {
     const id2AstObject = {}
     const referencesToResolve = []
 
-    function deserializeInternal(value) {
+    const deserializeInternal = (value) => {
         if (isAstObject(value)) {
             const astObject = modify({
                 id: value.id,

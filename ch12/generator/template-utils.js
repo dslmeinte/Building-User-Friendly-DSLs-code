@@ -4,7 +4,7 @@
 const camelCase = (str) => typeof str === "string"
     ? str
         .toLowerCase()
-        .replace(/\s+([a-z])/g, (_, ch) => ch.toUpperCase())    // TODO  backpropagate
+        .replace(/\s+([a-z])/g, (_, ch) => ch.toUpperCase())
         .replace(" ", "")
     : "__generationProblemDueToNonStringArgumentToCamelCase"
 module.exports.camelCase = camelCase
@@ -20,7 +20,7 @@ const withFirstUpper = (str) => typeof str === "string"
     : "GenerationProblemDueToNonStringArgumentToWithFirstUpper"
 module.exports.withFirstUpper = withFirstUpper
 
-// The following is part of a reference solution for the last exercise of section §8.4.3:
+// The following is part of a reference solution for the last part of Exercise 8.4 (of section § 8.4.3):
 /**
  * @returns {function(*=): *} - a function that maps over a single string using mapString or an array of strings using mapStrings.
  * If an array is given, that array is completely (i.e.: recursively) flattened first, before the mapStrings function is applied.
@@ -40,7 +40,7 @@ const asString = (nestedString) => Array.isArray(nestedString)
         .map(withNewlineEnsured)
         .join("")
     : withNewlineEnsured(nestedString)
-// For the last exercise of section §8.4.3:
+// For the last part of Exercise 8.4 (of section § 8.4.3):
 // const asString = mapNestedString(withNewlineEnsured, (strings) => strings.map(withNewlineEnsured).join(""))
 module.exports.asString = asString
 

@@ -11,8 +11,6 @@ const { generatedIndexJsx } = require("./indexJsx-template")
 const serializedAst = readJson(astPath)
 const deserializedAst = deserialize(serializedAst)
 
-// Print all issues - this is the 3rd exercise of § 9.2 (in the 2nd exercise block):
-
 const printIssue = (issue, astObject) => {
     console.log(`[ERROR] on AST object with id='${astObject.id}', concept='${astObject.concept}'; message: "${issue}"`)
 }

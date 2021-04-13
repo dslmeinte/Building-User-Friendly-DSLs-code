@@ -14,6 +14,10 @@ export const FormField = observer(({ id, label, children }) => <div className="r
 export const Input = observer(({ type, object, fieldName }) => <input
     type={type}
     value={object[fieldName]}
-    onChange={action((event) => { object[fieldName] = event.target.value })}
+    onChange={action((event) => {
+        object[fieldName] = type === "number"
+            ? Number.parseFloat(event.target.value)
+            : event.target.value
+    })}
 />)
 

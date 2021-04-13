@@ -1,37 +1,40 @@
+const { camelCase, withFirstUpper } = require("./template-utils")
+
+const defaultInitExpressionForType = (type) => {
+    switch (type) {
+        case "period in days": return `{ from: Date.now(), to: Date.now() }`
+        default: return `/* [GENERATION PROBLEM] type "${type}" isn't handled in defaultInitExpressionForType */`
+    }
+}
+
+const classField = (attribute) => {
+    const { settings } = attribute
+    const initialValue = settings["initial value"]
+    return `${camelCase(settings["name"])} = ${
+        initialValue
+            ? `/* [GENERATION PROBLEM] initial value not handled */`
+            : defaultInitExpressionForType(settings["type"])
+    }`
+}
+
 const indexJsx = (recordType) => {
-    const { camelCase, withFirstUpper } = require("./template-utils")
     const name = camelCase(recordType.settings["name"])
     const Name = withFirstUpper(name)
-
-    const defaultInitExpressionForType = (type) => {
-        switch (type) {
-            case "period in days": return `{ from: Date.now(), to: Date.now() }`
-            default: return `// [GENERATION PROBLEM] type "${type}" isn't handled for default initialization expression`
-        }
-    }
-
-    const initAssignment = (attribute) => {
-        const { settings } = attribute
-        const initialValue = settings["initial value"]
-        return `${name}.${camelCase(settings["name"])} = ${
-            initialValue
-                ? `// [GENERATION PROBLEM] initial value not handled`
-                : defaultInitExpressionForType(settings["type"])
-        }`
-    }
+    const { attributes } = recordType.settings
 
     return `import React from "react"
 import { render } from "react-dom"
-import { observable } from "mobx"
+import { makeAutoObservable } from "mobx"
 import { observer } from "mobx-react"
 import { FormField, Input } from "./components"
 
 require("./styling.css")
 
-const new${Name} = () => {
-    const ${name} = {}
-${recordType.settings["attributes"].map((attribute) => `    ${initAssignment(attribute)}`).join("\n")}
-    return ${name}
+class ${Name} {
+${attributes.map((attribute) => `    ${classField(attribute)}`).join("\n")}
+    constructor() {
+        makeAutoObservable(this)
+    }
 }
 
 const RentalForm = observer(({ rental }) => <div className="form">
@@ -52,7 +55,7 @@ const RentalForm = observer(({ rental }) => <div className="form">
     </form>
 </div>)
 
-const rental = observable(newRental())
+const rental = new Rental()
 
 const App = observer(() => <div>
     <RentalForm rental={rental} />

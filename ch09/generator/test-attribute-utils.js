@@ -3,10 +3,10 @@
  */
 
 const { deepEqual, equal, isTrue } = require("chai").assert
-const { cycleWith } = require("./attribute-references-utils")
+const { cycleWith } = require("./attribute-utils")
 const { generate: newId } = require("shortid")
 
-describe("attribute-references-utils.js:", (_) => {
+describe("attribute-utils.js:", (_) => {
 
     const attributeRefTo = (refAttribute) => ({
         id: newId(),

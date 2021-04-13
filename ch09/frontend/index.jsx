@@ -20,7 +20,6 @@ fetch(apiUrl)
         astContainer.ast = deserializeObservably(json)
     }))
 
-
 const save = (_) => {
     fetch(apiUrl, {
         method: "PUT",

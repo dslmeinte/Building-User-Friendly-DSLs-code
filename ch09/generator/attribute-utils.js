@@ -1,43 +1,23 @@
 const { isAstObject, isAstReference } = require("../ast")
 
-// Exercise 11.9:
-/**
- * Computes an array from merging all elements in left and right occurring uniquely.
- */
-const mergeUniquely = (left, right) => [ ...new Set([ ...left, ...right ]) ]
-
 /**
  * Computes all the attributes referenced anywhere within the value of the given attribute.
- * @param attribute - an AST object with concept label "Attribute".
+ * @param attribute - an AST object with concept label "Data Attribute".
  * @return {*[]} an array of attribute AST objects - possibly empty, specifically when expr is not an (expression) AST object
  */
 const referencedAttributesIn = (attribute) => {
-
-    // Exercise 11.9:
-    const reffedAttribs = (expr) => {
-        if (!isAstObject(expr)) {
-            return []
-        }
-        const { settings } = expr
-        switch (expr.concept) {
-            case "Attribute Reference":
-                return isAstReference(settings["attribute"]) ? [ settings["attribute"].ref ] : []
-            case "Binary Operation":
-                return mergeUniquely(reffedAttribs(settings["left operand"]), reffedAttribs(settings["right operand"]))
-            case "Number Literal":
-                return []
-            default:
-                throw new Error(`referencedAttributesIn(..) doesn't handle instances of the concept '${expr.concept}'`)
-        }
+    const initialValue = attribute.settings["initial value"]
+    if (isAstObject(initialValue) && initialValue.concept === "Attribute Reference") {
+        const refObject = initialValue.settings["attribute"]
+        return isAstReference(refObject) ? [ refObject.ref ] : []
     }
-
-    return reffedAttribs(attribute.settings["value"])
+    return []
 }
 
 
 /**
- * @param attribute - an AST object with concept label "Attribute".
- * @returns an array with a cycle of attributes through attribute references in values, starting at the given attribute.
+ * @param attribute - an AST object with concept label "Data Attribute".
+ * @returns an array with a cycle of attributes through attribute references in initial values, starting at the given attribute.
  *  An array of length 0 means: the given attribute is not part of any cycle.
  */
 const cycleWith = (attribute) => {
@@ -64,7 +44,7 @@ module.exports.cycleWith = cycleWith
 
 
 /**
- * @param attributes - an array of AST objects with concept label "Attribute".
+ * @param attributes - an array of AST objects with concept label "Data Attribute".
  * @returns an array of the same AST objects, in dependency order (assuming all references attributes are in the given array),
  *  or false when there's a cycle.
  */
@@ -103,12 +83,4 @@ const nameOf = (astObject) => astObject.settings["name"]
 const quote = (str) => `'${str}'`
 const quotedNamesOf = (astObjects) => astObjects.map(nameOf).map(quote)
 module.exports.quotedNamesOf = quotedNamesOf
-
-
-// Exercise 11.9:
-const isComputedAttribute = (attribute) => {
-    const { settings } = attribute
-    return settings["value"] && settings["value kind"] === "computed as"
-}
-module.exports.isComputedAttribute = isComputedAttribute
 

@@ -1,23 +1,25 @@
+const { camelCase, withFirstUpper } = require("./template-utils")
+
 const indexJsx = (recordType) => {
-    const { camelCase, withFirstUpper } = require("./template-utils")
     const name = camelCase(recordType.settings["name"])
     const Name = withFirstUpper(name)
 
     return `import React from "react"
 import { render } from "react-dom"
-import { observable } from "mobx"
+import { makeAutoObservable } from "mobx"
 import { observer } from "mobx-react"
 import { FormField, Input } from "./components"
 
 require("./styling.css")
 
-const new${Name} = () => {
-    const ${name} = {}
-    ${name}.rentalPeriod = { from: Date.now(), to: Date.now() }
-    ${name}.rentalPriceBeforeDiscount = "0.0"
-    ${name}.discount = "0"
-    ${name}.rentalPriceAfterDiscount = ${name}.rentalPriceBeforeDiscount
-    return ${name}
+class ${Name} {
+    rentalPeriod = { from: Date.now(), to: Date.now() }
+    rentalPriceBeforeDiscount = 0.0
+    discount = 0
+    rentalPriceAfterDiscount = this.rentalPriceBeforeDiscount
+    constructor() {
+        makeAutoObservable(this)
+    }
 }
 
 const RentalForm = observer(({ rental }) => <div className="form">
@@ -38,7 +40,7 @@ const RentalForm = observer(({ rental }) => <div className="form">
     </form>
 </div>)
 
-const rental = observable(newRental())
+const rental = new Rental()
 
 const App = observer(() => <div>
     <RentalForm rental={rental} />

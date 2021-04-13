@@ -1,37 +1,17 @@
 const { isAstObject, isAstReference } = require("../ast")
 
-// Exercise 11.9:
-/**
- * Computes an array from merging all elements in left and right occurring uniquely.
- */
-const mergeUniquely = (left, right) => [ ...new Set([ ...left, ...right ]) ]
-
 /**
  * Computes all the attributes referenced anywhere within the value of the given attribute.
  * @param attribute - an AST object with concept label "Attribute".
  * @return {*[]} an array of attribute AST objects - possibly empty, specifically when expr is not an (expression) AST object
  */
 const referencedAttributesIn = (attribute) => {
-
-    // Exercise 11.9:
-    const reffedAttribs = (expr) => {
-        if (!isAstObject(expr)) {
-            return []
-        }
-        const { settings } = expr
-        switch (expr.concept) {
-            case "Attribute Reference":
-                return isAstReference(settings["attribute"]) ? [ settings["attribute"].ref ] : []
-            case "Binary Operation":
-                return mergeUniquely(reffedAttribs(settings["left operand"]), reffedAttribs(settings["right operand"]))
-            case "Number Literal":
-                return []
-            default:
-                throw new Error(`referencedAttributesIn(..) doesn't handle instances of the concept '${expr.concept}'`)
-        }
+    const value = attribute.settings["value"]
+    if (isAstObject(value) && value.concept === "Attribute Reference") {
+        const refObject = value.settings["attribute"]
+        return isAstReference(refObject) ? [ refObject.ref ] : []
     }
-
-    return reffedAttribs(attribute.settings["value"])
+    return []
 }
 
 
@@ -103,12 +83,4 @@ const nameOf = (astObject) => astObject.settings["name"]
 const quote = (str) => `'${str}'`
 const quotedNamesOf = (astObjects) => astObjects.map(nameOf).map(quote)
 module.exports.quotedNamesOf = quotedNamesOf
-
-
-// Exercise 11.9:
-const isComputedAttribute = (attribute) => {
-    const { settings } = attribute
-    return settings["value"] && settings["value kind"] === "computed as"
-}
-module.exports.isComputedAttribute = isComputedAttribute
 

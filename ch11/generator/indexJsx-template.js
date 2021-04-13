@@ -4,7 +4,7 @@ const { dependencyOrderOf, isComputedAttribute } = require("./attribute-utils")
 
 const expressionFor = (value, ancestors) => {
     if (!isAstObject(value)) {
-        return `/* [GENERATION PROBLEM] value '${value}' isn't handled in expressionFor */ `
+        return `/* [GENERATION PROBLEM] value "${value}" isn't handled in expressionFor */`
     }
     const { settings } = value
     switch (value.concept) {
@@ -20,9 +20,9 @@ const expressionFor = (value, ancestors) => {
         }
         case "Number Literal": {
             const numberValue = settings["value"]
-            return numberValue === undefined ? `/* [GENERATION PROBLEM] number literal's value is undefined */` : numberValue
+            return numberValue === undefined ? `/* [GENERATION PROBLEM] number literal's value is undefined */` : `${numberValue}`
         }
-        default: return `/* [GENERATION PROBLEM] value of concept '${value.concept}' isn't handled in expressionFor */ `
+        default: return `/* [GENERATION PROBLEM] value of concept "${value.concept}" isn't handled in expressionFor */`
     }
 }
 module.exports.expressionFor = expressionFor    // (make public to test this function separately)
@@ -32,7 +32,7 @@ const defaultInitExpressionForType = (type) => {
         case "amount": return `0.0`
         case "percentage": return `0`
         case "period in days": return `{ from: Date.now(), to: Date.now() }`
-        default: return `/* [GENERATION PROBLEM] type "${type}" isn't handled for default initialization expression */`
+        default: return `/* [GENERATION PROBLEM] type "${type}" isn't handled in defaultInitExpressionForType */`
     }
 }
 
@@ -65,7 +65,7 @@ const formFieldInputs = (attribute, objectExpr) => {
         case "amount": return "$ " + (isComputedAttribute(attribute) ? `{${objectExpr}.${fieldName}.toFixed(2)}` : formFieldInput("number", objectExpr, fieldName))
         case "percentage": return (isComputedAttribute(attribute) ? `{${objectExpr}.${fieldName}}` : formFieldInput("number", objectExpr, fieldName)) + " %"
         case "period in days": return [ "from", "to" ].map((subFieldName) => formFieldInput("date", `${objectExpr}.${fieldName}`, subFieldName))
-        default: return `// [GENERATION PROBLEM] type "${type}" isn't handled for form field inputs`
+        default: return `// [GENERATION PROBLEM] type "${type}" isn't handled in formFieldInputs`
     }
 }
 
@@ -91,7 +91,7 @@ require("./styling.css")
 
 class ${Name} {`,
         indent(1)((dependencyOrderOf(attributes) || attributes).map(classField)),
-`    constructor() {
+        `    constructor() {
         makeAutoObservable(this)
     }
 }

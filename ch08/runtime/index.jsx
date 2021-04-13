@@ -1,18 +1,19 @@
 import React from "react"
 import { render } from "react-dom"
-import { observable } from "mobx"
+import { makeAutoObservable } from "mobx"
 import { observer } from "mobx-react"
 import { FormField, Input } from "./components"
 
 require("./styling.css")
 
-const newRental = () => {
-    const rental = {}
-    rental.rentalPeriod = { from: Date.now(), to: Date.now() }
-    rental.rentalPriceBeforeDiscount = "0.0"
-    rental.discount = "0"
-    rental.rentalPriceAfterDiscount = rental.rentalPriceBeforeDiscount
-    return rental
+class Rental {
+    rentalPeriod = { from: Date.now(), to: Date.now() }
+    rentalPriceBeforeDiscount = 0.0
+    discount = 0
+    rentalPriceAfterDiscount = this.rentalPriceBeforeDiscount
+    constructor() {
+        makeAutoObservable(this)
+    }
 }
 
 const RentalForm = observer(({ rental }) => <div className="form">
@@ -33,7 +34,7 @@ const RentalForm = observer(({ rental }) => <div className="form">
     </form>
 </div>)
 
-const rental = observable(newRental())
+const rental = new Rental()
 
 const App = observer(() => <div>
     <RentalForm rental={rental} />

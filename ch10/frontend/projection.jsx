@@ -123,8 +123,8 @@ export const Projection = observer(({ value, deleteValue, ancestors }) => {
                                             "Attribute Reference",
                                             "Number Literal"
                                         ]}
-                                        placeholderText="<initial value>"
-                                        actionText="(choose concept for initial value)"
+                                        placeholderText="<value>"
+                                        actionText="(choose concept for value)"
                                     />
                                     : <Projection value={settings["value"]} ancestors={[value, ...ancestors]}
                                                   deleteValue={() => {
@@ -140,7 +140,7 @@ export const Projection = observer(({ value, deleteValue, ancestors }) => {
                                     />
                                 }
                             </div>
-                            : <AddNewButton buttonText="+ initial value" actionFunction={() => {
+                            : <AddNewButton buttonText="+ value" actionFunction={() => {
                                 settings["value"] = placeholderAstObject
                             }} />
                         }
