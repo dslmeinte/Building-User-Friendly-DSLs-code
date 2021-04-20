@@ -50,8 +50,8 @@ module.exports.asString = asString
  */
 const indent = (indentLevel) => {
     const indentationPrefix = "    ".repeat(indentLevel)
-    // const indentLine = (str) => indentationPrefix + str
-    const indentLine = (str) => str.split("\n").map((line) => (line.length > 0 ? indentationPrefix : "") + line).join("\n")
+    const indentLine = (str) => indentationPrefix + str
+    // const indentLine = (str) => str.split("\n").map((line) => (line.length > 0 ? indentationPrefix : "") + line).join("\n")
     // For the last part of Exercise 8.4 (of section § 8.4.3):
     // return mapNestedString(indentLine, (strings) => strings.map(indentLine))
     // Alternatively, using another nested function:

@@ -55,9 +55,11 @@ const classField = (attribute) => {
     const fieldName = camelCase(settings["name"])
     // Handle a computed value:
     if (isComputedAttribute(attribute)) {
-        return `get ${fieldName}() {
-    return ${expressionFor(value, [])}
-}`
+        return [
+            `get ${fieldName}() {`,
+            `    return ${expressionFor(value, [])}`,
+            `}`
+        ]
     }
     // Handle an initial (possibly default) value:
     return `${fieldName} = ${

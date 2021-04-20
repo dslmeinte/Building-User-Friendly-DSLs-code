@@ -20,7 +20,7 @@ const requiresParentheses = (expr, parent) => {
     const precExpr = precedenceOfOperator(expr.settings["operator"])
     const precParent = precedenceOfOperator(parent.settings["operator"])
     return precParent > precExpr || (
-        // Exercise 12.7:
+        // Exercise 12.8:
         precExpr === precParent && expr === parent.settings[associativityOfOperator(expr.settings["operator"]) + " operand"]
     )
 }
