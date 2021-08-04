@@ -92,6 +92,7 @@ module.exports.deserializeObservably = makeDeserialize(observable)
 
 const { nanoid } = require("nanoid")
 const newId = () => nanoid(10)  // 1% chance of at least 1 collision in ~17 years with 1000 IDs generated per hour
+module.exports.newId = newId
 
 const newAstObject = (concept, settings) => ({
     id: newId(),

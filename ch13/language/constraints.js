@@ -110,7 +110,7 @@ const typeIssuesForBinaryOperator = (binaryOperation, ancestors) => {
                 issues.push(`The left operand of this '-' operator has type '${typeAsText(leftType)}', but must have a number type ('amount', or 'percentage')`)
             }
             if (!isNumberType(rightType)) {
-                issues.push(`The left operand of this '-' operator has type '${typeAsText(rightType)}', but must have a number type ('amount', or 'percentage')`)
+                issues.push(`The right operand of this '-' operator has type '${typeAsText(rightType)}', but must have a number type ('amount', or 'percentage')`)
             }
             if (!areEqual(leftType, rightType)) {
                 issues.push(`The types of both operands of this '-' operator differ (left '${typeAsText(leftType)}' vs. '${typeAsText(rightType)}' right), but must be the same`)

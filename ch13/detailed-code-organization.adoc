@@ -1,0 +1,147 @@
+= Code organization
+
+.Code organization
+[cols="3,5a"]
+|===
+| Path | Contents/purpose
+
+
+| `backend/`
+| Holds the complete backend, including persisted data
+
+| &emsp; `data/`
+| Holds the (serialized) AST persisted by the backend
+
+| &emsp; &emsp; `.gitignore`
+| Git-ignores all JSON files
+
+| &emsp; &emsp; `contents.backup-<version>.json`
+| Backup of serialized ASTs before migrating from version `<version>`
+
+| &emsp; &emsp; `contents.backup-<version>.json`
+| The serialized AST served and manipulated by the frontend
+
+| &emsp; server.js
+| Implements the backend using https://expressjs.com/[Express]
+
+| &emsp; storage.js
+| Is responsible for files in `data/`
+
+
+| `common/`
+| Common code used by both back- and frontend, and the generator
+
+| &emsp; `ast.js`
+| Is responsible for dealing with ASTs, and its low-level structure
+
+| &emsp; `file-utils.js`
+| Reads/writes JSON from/to files
+
+
+| `frontend/`
+| Implements the frontend using https://reactjs.org/[React] and https://mobx.js.org/[MobX]
+
+| &emsp; `index.html`
+| The frontend's entrypoint that "`kicks off`" `index.jsx`
+
+| &emsp; `index.jsx`
+| Implements the frontend as a React SPA
+
+| &emsp; `projection.jsx`
+| Implements the projection
+
+| &emsp; `styling.css`
+| Holds all styling, included by `index.jsx`
+
+| &emsp; `support-components.jsx`
+| Implements stateless React component functions to help implementing the projection regarding selection, showing errors, etc.
+
+| &emsp; `value-components.jsx`
+| Implements stateless React component functions to project editable text and number values
+
+
+| `generator/`
+| Implements the generator
+
+| &emsp; `dependency-utils.js`
+| Implements functions for dealing with (potentially cyclic) dependencies
+
+| &emsp; `generate.js`
+| Entrypoint for generation
+
+| &emsp; `indexJsx-template.js`
+| Implements generation of the `index.jsx` file in the Runtime
+
+| &emsp; `template-utils.js`
+| Implements convenient function for implementing code generation templates
+
+
+| `init/`
+| Implements initialization of the backend's data store
+
+| &emsp; `example-AST.js`
+| Constructs and exports the AST of the example DSL content
+
+| &emsp; `install-example-DSL-content.js`
+| Writes the AST for the example DSL content to the backend's data store
+
+| &emsp; `migrations.js`
+| Defines and executes migrations on the persisted example DSL content
+
+
+| `language/`
+| Implements language-specifics such constraints, type system, etc.
+
+| &emsp; `constraints.js`
+| Implements the constraints of our example DSL
+
+| &emsp; `factories.js`
+| Implements convenient factory functions for some of the concepts in the example DSL
+
+| &emsp; `operators.js`
+| Implements functions specifically for the operators in the example DSL
+
+| &emsp; `queries.js`
+| Implements a couple of useful query functions on ASTs in the example DSL
+
+| &emsp; `type-system.js`
+| Implements the type system of the example DSL
+
+
+| `runtime/`
+| Implements the Runtime
+
+| &emsp; `components.jsx`
+| Implements several stateless React component functions for the Runtime UI
+
+| &emsp; `dates.js`
+| Implements a `Period` class and date functions
+
+| &emsp; `index.html`
+| The entrypoint for the Runtime UI that "`kicks off`" `index.jsx`
+
+| &emsp; `index.jsx`
+| Implements the Runtime UI
+
+| &emsp; `styling.css`
+| Holds all styling, included by `index.jsx`
+
+
+| `test/`
+| Holds the unit tests
+
+| &emsp; `test-type-system.js`
+| Tests various aspects of the type system's implementation
+
+
+| `generate-and-run-Runtime.sh`
+| A shell script that generates part of the Runtime's code, and then runs it
+
+| `initialize-storage.sh`
+| A shell script that initializes the backend's data store
+
+| `run-Domain-IDE.sh`
+| A shell script that build, and runs the Domain IDE
+
+|===
+
