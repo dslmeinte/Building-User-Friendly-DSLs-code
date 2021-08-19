@@ -55,7 +55,7 @@ const affectedAttributesInConsequence = (consequence) => {
     }
     const { settings } = consequence
     switch (consequence.concept) {
-        case "Effect": return referencedAttributesIn(settings["attribute reference"])
+        case "Increment Effect": return referencedAttributesIn(settings["attribute reference"])
         default: {
             console.warn(`affectedAttributesInConsequence(..) doesn't handle instances of the concept "${consequence.concept}" - returning []`)
             return []

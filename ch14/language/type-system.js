@@ -100,7 +100,7 @@ const typeOf = (astObject, ancestors) => {
             if (parent.concept === "Attribute") {
                 return typeOfAttribute(parent)
             }
-            if (parent.concept === "Effect") {
+            if (parent.concept === "Increment Effect") {
                 return typeOf(parent.settings["attribute reference"], ancestors)
             }
             return untype

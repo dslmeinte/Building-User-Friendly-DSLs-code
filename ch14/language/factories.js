@@ -16,8 +16,8 @@ module.exports.binaryOperation = binaryOperation
 const businessRule = (condition, consequence) => newAstObject("Business Rule", { condition, consequence })
 module.exports.businessRule = businessRule
 
-const effect = (value, reffedattribute) => newAstObject("Effect", { value, "attribute reference": attributeReferenceTo(reffedattribute) })
-module.exports.effect = effect
+const incrementEffect = (value, reffedattribute) => newAstObject("Increment Effect", { value, "attribute reference": attributeReferenceTo(reffedattribute) })
+module.exports.incrementEffect = incrementEffect
 
 const intervalOperation = (operand, operator, timeUnit) => newAstObject("Interval Operation", { operand, operator, "time unit": timeUnit })
 module.exports.intervalOperation = intervalOperation

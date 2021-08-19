@@ -75,7 +75,7 @@ const consequenceAsStatement = (consequence) => {
     }
     const { settings } = consequence
     switch (consequence.concept) {
-        case "Effect": return `${jsNameFor(settings["attribute reference"].settings["attribute"].ref)} += ${expressionFor(settings["value"])}`
+        case "Increment Effect": return `${jsNameFor(settings["attribute reference"].settings["attribute"].ref)} += ${expressionFor(settings["value"])}`
         default: return `/* [GENERATION PROBLEM] value of concept "${consequence.concept}" isn't handled in consequenceAsStatement */`
     }
 }

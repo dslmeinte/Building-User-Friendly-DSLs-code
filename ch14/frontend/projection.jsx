@@ -148,7 +148,7 @@ export const Projection = observer(({ value, setValue, ancestors }) => {    // F
                 </UiWrapped>
             }
 
-            case "Effect": {
+            case "Increment Effect": {
                 return <UiWrapped className="inline" showType>
                     <span className="keyword whitespace-right">add</span>
                     {projectionExpressionFor(value, "value", ancestors)}
@@ -217,7 +217,7 @@ export const Projection = observer(({ value, setValue, ancestors }) => {    // F
                     <AddNewButton buttonText="+ business rule" actionFunction={() => {
                         settings["business rules"].push(
                             newAstObject("Business Rule", {
-                                "consequence": newAstObject("Effect", ({
+                                "consequence": newAstObject("Increment Effect", ({
                                     "attribute reference": newAstObject("Attribute Reference")
                                 }))
                             })

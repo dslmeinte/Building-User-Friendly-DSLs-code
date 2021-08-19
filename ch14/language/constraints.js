@@ -95,7 +95,7 @@ const issuesFor = (astObject, ancestors) => {
             issueIfNotAstObject("consequence", "A business rule must have a consequence")
             break
         }
-        case "Effect": {
+        case "Increment Effect": {
             issueIfNotAstObject("value", "The value must be defined")
             const typeOfValue = typeOf(settings["value"], [ astObject, ...ancestors ])
             const attributeRefObject = settings["attribute reference"].settings["attribute"]
@@ -107,7 +107,7 @@ const issuesFor = (astObject, ancestors) => {
                         + `\n\tbut they are: '${typeAsText(typeOfValue)}', resp., '${typeAsText(typeOfReffedAttribute)}'`)
                 }
                 if (reffedAttribute.settings["value kind"] !== "initially" || !isAstObject(reffedAttribute.settings["value"])) {
-                    issues.push(`An effect (of a business rule' consequence) must reference an attribute with an initial value`)
+                    issues.push(`An increment effect must reference an attribute with an initial value`)
                 }
             }
             break

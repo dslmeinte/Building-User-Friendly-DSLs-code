@@ -1,5 +1,5 @@
 const { newAstObject } = require("../common/ast")
-const { attribute, attributeReferenceTo, binaryOperation, businessRule, effect, intervalOperation, number } = require("../language/factories")
+const { attribute, attributeReferenceTo, binaryOperation, businessRule, incrementEffect, intervalOperation, number } = require("../language/factories")
 
 
 const rentalPeriodAttribute = attribute( {
@@ -30,12 +30,12 @@ const rentalPriceAfterDiscountAttribute = attribute({
 
 const businessRule1 = businessRule(
     intervalOperation(attributeReferenceTo(rentalPeriodAttribute), "contains a", "Saturday"),
-    effect(number(10), discountAttribute)
+    incrementEffect(number(10), discountAttribute)
 )
 
 const businessRule2 = businessRule(
     intervalOperation(attributeReferenceTo(rentalPeriodAttribute), "starts in", "December"),
-    effect(number(5), discountAttribute)
+    incrementEffect(number(5), discountAttribute)
 )
 
 const rental = newAstObject("Record Type", {
