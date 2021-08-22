@@ -2,7 +2,7 @@
 <model ref="r:8b97a555-3587-49df-8d4b-762048e09ba9(BusinessDsl.behavior)">
   <persistence version="9" />
   <languages>
-    <use id="7866978e-a0f0-4cc7-81bc-4d213d9375e1" name="jetbrains.mps.lang.smodel" version="17" />
+    <use id="7866978e-a0f0-4cc7-81bc-4d213d9375e1" name="jetbrains.mps.lang.smodel" version="18" />
     <use id="af65afd8-f0dd-4942-87d9-63a55f2a9db1" name="jetbrains.mps.lang.behavior" version="2" />
     <use id="d8f591ec-4d86-4af2-9f92-a9e93c803ffa" name="jetbrains.mps.lang.scopes" version="0" />
     <devkit ref="fbc25dd2-5da4-483a-8b19-70928e1b62d7(jetbrains.mps.devkit.general-purpose)" />
@@ -61,9 +61,6 @@
       <concept id="1081236700937" name="jetbrains.mps.baseLanguage.structure.StaticMethodCall" flags="nn" index="2YIFZM">
         <reference id="1144433194310" name="classConcept" index="1Pybhc" />
       </concept>
-      <concept id="1164991038168" name="jetbrains.mps.baseLanguage.structure.ThrowStatement" flags="nn" index="YS8fn">
-        <child id="1164991057263" name="throwable" index="YScLw" />
-      </concept>
       <concept id="1070534058343" name="jetbrains.mps.baseLanguage.structure.NullLiteral" flags="nn" index="10Nm6u" />
       <concept id="1068390468198" name="jetbrains.mps.baseLanguage.structure.ClassConcept" flags="ig" index="312cEu" />
       <concept id="1068431474542" name="jetbrains.mps.baseLanguage.structure.VariableDeclaration" flags="ng" index="33uBYm">
@@ -118,7 +115,6 @@
         <reference id="1068499141037" name="baseMethodDeclaration" index="37wK5l" />
         <child id="1068499141038" name="actualArgument" index="37wK5m" />
       </concept>
-      <concept id="1212685548494" name="jetbrains.mps.baseLanguage.structure.ClassCreator" flags="nn" index="1pGfFk" />
       <concept id="1107461130800" name="jetbrains.mps.baseLanguage.structure.Classifier" flags="ng" index="3pOWGL">
         <child id="5375687026011219971" name="member" index="jymVt" unordered="true" />
       </concept>
@@ -159,6 +155,9 @@
       <concept id="8077936094962911282" name="jetbrains.mps.lang.scopes.structure.ParentScope" flags="nn" index="iy90A" />
     </language>
     <language id="7866978e-a0f0-4cc7-81bc-4d213d9375e1" name="jetbrains.mps.lang.smodel">
+      <concept id="1177026924588" name="jetbrains.mps.lang.smodel.structure.RefConcept_Reference" flags="nn" index="chp4Y">
+        <reference id="1177026940964" name="conceptDeclaration" index="cht4Q" />
+      </concept>
       <concept id="1138411891628" name="jetbrains.mps.lang.smodel.structure.SNodeOperation" flags="nn" index="eCIE_">
         <child id="1144104376918" name="parameter" index="1xVPHs" />
       </concept>
@@ -179,15 +178,15 @@
       </concept>
       <concept id="1171407110247" name="jetbrains.mps.lang.smodel.structure.Node_GetAncestorOperation" flags="nn" index="2Xjw5R" />
       <concept id="6677504323281689838" name="jetbrains.mps.lang.smodel.structure.SConceptType" flags="in" index="3bZ5Sz" />
-      <concept id="1154546920561" name="jetbrains.mps.lang.smodel.structure.OperationParm_ConceptList" flags="ng" index="3gmYPX">
-        <child id="1154546920563" name="concept" index="3gmYPZ" />
-      </concept>
       <concept id="1154546950173" name="jetbrains.mps.lang.smodel.structure.ConceptReference" flags="ng" index="3gn64h">
         <reference id="1154546997487" name="concept" index="3gnhBz" />
       </concept>
       <concept id="6039268229364358244" name="jetbrains.mps.lang.smodel.structure.ExactConceptCase" flags="ng" index="1pnPoh">
         <child id="6039268229364358388" name="body" index="1pnPq1" />
         <child id="6039268229364358387" name="concept" index="1pnPq6" />
+      </concept>
+      <concept id="1144101972840" name="jetbrains.mps.lang.smodel.structure.OperationParm_Concept" flags="ng" index="1xMEDy">
+        <child id="1207343664468" name="conceptArgument" index="ri$Ld" />
       </concept>
       <concept id="5944356402132808749" name="jetbrains.mps.lang.smodel.structure.ConceptSwitchStatement" flags="nn" index="1_3QMa">
         <child id="6039268229365417680" name="defaultBlock" index="1prKM_" />
@@ -533,83 +532,20 @@
       <property role="TrG5h" value="referableAttributes" />
       <node concept="3Tm6S6" id="6aiAwNFNq_j" role="1B3o_S" />
       <node concept="3clFbS" id="6aiAwNFNqwQ" role="3clF47">
-        <node concept="3cpWs8" id="6aiAwNFNq_Y" role="3cqZAp">
-          <node concept="3cpWsn" id="6aiAwNFNqA1" role="3cpWs9">
-            <property role="TrG5h" value="containedBy" />
-            <node concept="3Tqbb2" id="6aiAwNFNqA2" role="1tU5fm">
-              <ref role="ehGHo" to="tpck:gw2VY9q" resolve="BaseConcept" />
-            </node>
-            <node concept="2OqwBi" id="6aiAwNFNqA3" role="33vP2m">
-              <node concept="13iPFW" id="6aiAwNFNqA4" role="2Oq$k0" />
-              <node concept="2Xjw5R" id="6aiAwNFNqA5" role="2OqNvi">
-                <node concept="3gmYPX" id="6aiAwNFNqA6" role="1xVPHs">
-                  <node concept="3gn64h" id="6aiAwNFNqA8" role="3gmYPZ">
-                    <ref role="3gnhBz" to="epnx:3yMAGXdFSNO" resolve="BusinessRule" />
-                  </node>
-                  <node concept="3gn64h" id="6aiAwNFNqA7" role="3gmYPZ">
-                    <ref role="3gnhBz" to="epnx:2oYTVs3bUDZ" resolve="RecordType" />
+        <node concept="3clFbF" id="vMXKKlSRg_" role="3cqZAp">
+          <node concept="2OqwBi" id="vMXKKlSS3D" role="3clFbG">
+            <node concept="2OqwBi" id="vMXKKlSRsN" role="2Oq$k0">
+              <node concept="13iPFW" id="vMXKKlSRgz" role="2Oq$k0" />
+              <node concept="2Xjw5R" id="vMXKKlSRN0" role="2OqNvi">
+                <node concept="1xMEDy" id="vMXKKlSRN2" role="1xVPHs">
+                  <node concept="chp4Y" id="vMXKKlSRT1" role="ri$Ld">
+                    <ref role="cht4Q" to="epnx:2oYTVs3bUDZ" resolve="RecordType" />
                   </node>
                 </node>
               </node>
             </node>
-          </node>
-        </node>
-        <node concept="Jncv_" id="6aiAwNFNsss" role="3cqZAp">
-          <ref role="JncvD" to="epnx:3yMAGXdFSNO" resolve="BusinessRule" />
-          <node concept="37vLTw" id="6aiAwNFNsuJ" role="JncvB">
-            <ref role="3cqZAo" node="6aiAwNFNqA1" resolve="containedBy" />
-          </node>
-          <node concept="3clFbS" id="6aiAwNFNssw" role="Jncv$">
-            <node concept="3cpWs6" id="6aiAwNFNszL" role="3cqZAp">
-              <node concept="2OqwBi" id="6aiAwNFNtk8" role="3cqZAk">
-                <node concept="2OqwBi" id="6aiAwNFNsJY" role="2Oq$k0">
-                  <node concept="Jnkvi" id="6aiAwNFNs_B" role="2Oq$k0">
-                    <ref role="1M0zk5" node="6aiAwNFNssy" resolve="businessRule" />
-                  </node>
-                  <node concept="3TrEf2" id="6aiAwNFNt8d" role="2OqNvi">
-                    <ref role="3Tt5mk" to="epnx:3yMAGXdFSNP" resolve="context" />
-                  </node>
-                </node>
-                <node concept="3Tsc0h" id="6aiAwNFNtvR" role="2OqNvi">
-                  <ref role="3TtcxE" to="epnx:2oYTVs3bY4_" resolve="attributes" />
-                </node>
-              </node>
-            </node>
-          </node>
-          <node concept="JncvC" id="6aiAwNFNssy" role="JncvA">
-            <property role="TrG5h" value="businessRule" />
-            <node concept="2jxLKc" id="6aiAwNFNssz" role="1tU5fm" />
-          </node>
-        </node>
-        <node concept="Jncv_" id="6aiAwNFNt$8" role="3cqZAp">
-          <ref role="JncvD" to="epnx:2oYTVs3bUDZ" resolve="RecordType" />
-          <node concept="37vLTw" id="6aiAwNFNtAY" role="JncvB">
-            <ref role="3cqZAo" node="6aiAwNFNqA1" resolve="containedBy" />
-          </node>
-          <node concept="3clFbS" id="6aiAwNFNt$c" role="Jncv$">
-            <node concept="3cpWs6" id="6aiAwNFNtDB" role="3cqZAp">
-              <node concept="2OqwBi" id="6aiAwNFNtTR" role="3cqZAk">
-                <node concept="Jnkvi" id="6aiAwNFNtIm" role="2Oq$k0">
-                  <ref role="1M0zk5" node="6aiAwNFNt$e" resolve="recordType" />
-                </node>
-                <node concept="3Tsc0h" id="6aiAwNFNu4q" role="2OqNvi">
-                  <ref role="3TtcxE" to="epnx:2oYTVs3bY4_" resolve="attributes" />
-                </node>
-              </node>
-            </node>
-          </node>
-          <node concept="JncvC" id="6aiAwNFNt$e" role="JncvA">
-            <property role="TrG5h" value="recordType" />
-            <node concept="2jxLKc" id="6aiAwNFNt$f" role="1tU5fm" />
-          </node>
-        </node>
-        <node concept="YS8fn" id="6aiAwNFNuhH" role="3cqZAp">
-          <node concept="2ShNRf" id="6aiAwNFNuts" role="YScLw">
-            <node concept="1pGfFk" id="6aiAwNFNvCM" role="2ShVmc">
-              <ref role="37wK5l" to="wyt6:~IllegalStateException.&lt;init&gt;(java.lang.String)" resolve="IllegalStateException" />
-              <node concept="Xl_RD" id="6aiAwNFNvKb" role="37wK5m">
-                <property role="Xl_RC" value="Could not determine referable attributes, because this attribute reference is not contained in a business rule, or record type" />
-              </node>
+            <node concept="3Tsc0h" id="vMXKKlSSfK" role="2OqNvi">
+              <ref role="3TtcxE" to="epnx:2oYTVs3bY4_" resolve="attributes" />
             </node>
           </node>
         </node>

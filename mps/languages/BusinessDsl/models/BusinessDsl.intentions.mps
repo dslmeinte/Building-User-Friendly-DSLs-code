@@ -98,7 +98,7 @@
         <node concept="3clFbF" id="2oYTVs3dW5U" role="3cqZAp">
           <node concept="3cpWs3" id="2oYTVs3dXQR" role="3clFbG">
             <node concept="Xl_RD" id="2oYTVs3dXSf" role="3uHU7w">
-              <property role="Xl_RC" value=" An Initial Value" />
+              <property role="Xl_RC" value=" Value" />
             </node>
             <node concept="1eOMI4" id="2oYTVs3dWc6" role="3uHU7B">
               <node concept="3K4zz7" id="2oYTVs3dXi2" role="1eOMHV">
