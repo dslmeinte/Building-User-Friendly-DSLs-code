@@ -1,7 +1,7 @@
 const Concepts = {
-    attribute: "Data Attribute",
+    attribute: "Attribute",
     attributeRef: "Attribute Reference",
-    numberLiteral: "Number Literal",
+    number: "Number",
     recordType: "Record Type"
 }
 module.exports.Concepts = Concepts

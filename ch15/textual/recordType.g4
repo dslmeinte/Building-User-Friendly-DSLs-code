@@ -10,9 +10,9 @@ attributeReference: '->' WS? STRING ;
 
 fragment DIGIT: [0-9] ;
 
-numberLiteral: DIGIT+ ('.' DIGIT+)? ;
+number: DIGIT+ ('.' DIGIT+)? ;
 
-value: attributeReference | numberLiteral ;
+value: attributeReference | number ;
 
 attribute: STRING WS? ':' WS? type (WS 'initially' WS? value)? ;
 
