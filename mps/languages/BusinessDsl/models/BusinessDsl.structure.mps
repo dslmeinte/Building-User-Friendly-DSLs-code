@@ -120,15 +120,15 @@
       <property role="TrG5h" value="amount" />
       <property role="1L1pqM" value="amount" />
     </node>
+    <node concept="25R33" id="2oYTVs3bXo1" role="25R1y">
+      <property role="3tVfz5" value="2755894795215820289" />
+      <property role="TrG5h" value="dateRange" />
+      <property role="1L1pqM" value="date range" />
+    </node>
     <node concept="25R33" id="2oYTVs3bXnY" role="25R1y">
       <property role="3tVfz5" value="2755894795215820286" />
       <property role="TrG5h" value="percentage" />
       <property role="1L1pqM" value="percentage" />
-    </node>
-    <node concept="25R33" id="2oYTVs3bXo1" role="25R1y">
-      <property role="3tVfz5" value="2755894795215820289" />
-      <property role="TrG5h" value="periodInDays" />
-      <property role="1L1pqM" value="period in days" />
     </node>
   </node>
   <node concept="1TIwiD" id="2oYTVs3bXo7">
