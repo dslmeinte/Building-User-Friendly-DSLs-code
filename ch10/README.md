@@ -61,18 +61,25 @@ The following lists every source file of the Domain IDE, and whether it's DSL-_s
 
 | Folder | File | DSL- |
 | ------ | ---- | ---- |
-| `src` | `ast.js` | generic |
-| | `constraints.js` | *specific* |
-| `src/frontend` | `index.html` | aspecific |
+| `src/backend` | `server.js` | aspecific |
+| | `storage.js` | aspecific |
+| `src/common` | `ast.js` | generic |
+| | `dependency-utils.js` | aspecific* |
+| | `file-utils.js` | aspecific |
+| `src/frontend` | `css-util.js` | aspecific |
+| | `index.html` | aspecific |
 | | `index.jsx` | aspecific |
 | | `projection.jsx` | *specific* |
-| | `selectable.jsx` | generic |
 | | `styling.css` | all three |
+| | `support-components.jsx` | generic |
 | | `value-components.jsx` | generic |
-| `src/backend` | `server.js` | aspecific |
-| `src/backend/data` | `version.json` | *specific* |
-| `src/generator` | `attribute-utils.js` | *specific* |
-| | `generate.js` | generic |
+| `src/generator` | `generate.js` | generic |
 | | `indexJsx-template.js` | *specific* |
 | | `template-utils.js` | aspecific |
+| `src/init` | `example-AST.js` | *specific* |
+| | `install-example-DSL-content.js` | *specific* |
+| | `migrations.js` | *specific* |
+| `src/language` | `constraints.js` | *specific* |
+| | `queries.js` | *specific* |
 
+*) after doing a proper Refactoring so that a dependencies function is passed as an argument, instead of using the `referencedAttributesInValueOf` function from `src/language/queries`.

@@ -2,12 +2,14 @@ import React from "react"
 import { action } from "mobx"
 import { observer } from "mobx-react"
 
+import { asClassNameArgument } from "./css-util"
+
 
 const isMissing = (value) => value === null || value === undefined
 
 const DisplayValue = ({ editState, className, placeholderText }) =>
     <span
-        className={className + (isMissing(editState.value) ? " value-missing" : "")}    // TODO  back-propagate
+        className={asClassNameArgument(className, isMissing(editState.value) && "value-missing")}
         onClick={action((event) => {
             event.stopPropagation()
             editState.inEdit = true
@@ -35,12 +37,6 @@ const inputValueComponent = ({ inputType, isValid }) =>
                     }
                     editState.inEdit = false
                 })}
-                // Prevent that clicking in the input selects the entire projection of the current AST object:
-                onClick={(event) => {
-                    if (editState.inEdit) {
-                        event.stopPropagation()
-                    }
-                }}
                 onKeyUp={action((event) => {
                     if (event.key === "Enter") {
                         const newValue = event.target.value
@@ -53,6 +49,9 @@ const inputValueComponent = ({ inputType, isValid }) =>
                         editState.inEdit = false
                     }
                 })}
+                onClick={(event) => {
+                    event.stopPropagation()
+                }}
             />
             : <DisplayValue editState={editState} className="value" placeholderText={placeholderText} />
     )
@@ -89,10 +88,12 @@ export const DropDownValue = observer(({ editState, className, options, placehol
                     editState.inEdit = false
                 }
             })}
-            className={className}   // TODO  back-propagate
+            className={className}
         >
             {actionText && <option key={-1} className="action">{actionText}</option>}
-            {options.map((option, index) => <option key={index}>{option}</option>)}
+            {options.map((option, index) =>
+                <option key={index}>{option}</option>
+            )}
         </select>
         : <DisplayValue editState={editState} className={className} placeholderText={placeholderText} />
 )

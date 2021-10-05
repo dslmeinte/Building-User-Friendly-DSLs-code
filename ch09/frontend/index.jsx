@@ -6,13 +6,13 @@ import { observer } from "mobx-react"
 require("./styling.css")
 
 
-import { deserializeObservably, serialize } from "../ast"
+import { deserializeObservably, serialize } from "../common/ast"
 
 const astContainer = observable({
     ast: null
 })
 
-const apiUrl = "http://localhost:8080/ast"
+const apiUrl = "http://localhost:8080/contents"
 
 fetch(apiUrl)
     .then((response) => response.json())
@@ -38,7 +38,7 @@ const App = observer(() =>
     astContainer.ast
         ? <div>
             <button className="save" onClick={save}>Save</button>
-            <Projection value={astContainer.ast} ancestors={[]} />
+            <Projection astObject={astContainer.ast} ancestors={[]} />
         </div>
         : <div className="spinner"></div>
 )

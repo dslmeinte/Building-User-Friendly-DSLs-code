@@ -1,33 +1,35 @@
 const { join } = require("path")
 
-const { readVersionedContents } = require("../backend/storage")
 const { deserialize, isAstObject } = require("../common/ast")
-const { issuesFor } = require("../language/constraints")
 const { writeString } = require("../common/file-utils")
+const { readVersionedContents } = require("../backend/storage")
+const { issuesFor } = require("../language/constraints")
 const { generatedIndexJsx } = require("./indexJsx-template")
+
+const indexJsxPath = join(__dirname, "../runtime/index.jsx")
+
+const serializedAst = readVersionedContents().contents
+const deserializedAst = deserialize(serializedAst)
 
 
 const printIssue = (issue, astObject) => {
     console.log(`[ERROR] on AST object with id='${astObject.id}', concept='${astObject.concept}'; message: "${issue}"`)
 }
 
-const printAllIssuesFor = (value, ancestors) => {
-    if (isAstObject(value)) {
-        issuesFor(value, ancestors).forEach((issue) => printIssue(issue, value))
-        for (const propertyName in value.settings) {
-            printAllIssuesFor(value.settings[propertyName], [ value, ...ancestors ])
+const printAllIssuesFor = (astObject, ancestors) => {
+    if (isAstObject(astObject)) {
+        issuesFor(astObject, ancestors).forEach((issue) => printIssue(issue, astObject))
+        for (const propertyName in astObject.settings) {
+            printAllIssuesFor(astObject.settings[propertyName], [ astObject, ...ancestors ])
         }
     }
-    if (Array.isArray(value)) {
-        value.forEach((item) => printAllIssuesFor(item, ancestors))
+    if (Array.isArray(astObject)) {
+        astObject.forEach((item) => printAllIssuesFor(item, ancestors))
     }
 }
 
+printAllIssuesFor(deserializedAst, [])
 
-const ast = deserialize(readVersionedContents().contents)
 
-printAllIssuesFor(ast, [])
-
-const indexJsxPath = join(__dirname, "../runtime/index.jsx")
-writeString(indexJsxPath, generatedIndexJsx(ast))
+writeString(indexJsxPath, generatedIndexJsx(deserializedAst))
 

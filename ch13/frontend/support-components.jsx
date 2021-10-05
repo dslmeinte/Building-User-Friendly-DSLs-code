@@ -2,8 +2,8 @@ import React from "react"
 import { action, observable } from "mobx"
 import { observer } from "mobx-react"
 
+import { asClassNameArgument } from "./css-util"
 import { typeAsText, typeOf } from "../language/type-system"
-import { issuesFor } from "../language/constraints"
 
 
 const selection = observable({ selected: undefined })
@@ -12,30 +12,31 @@ const deselect = () => {
     selection.selected = undefined
 }
 
-document.addEventListener("mousedown", action((event) => {  // FIXME  back-propagate!
+document.addEventListener("mousedown", action((event) => {
     if (!event.target.classList.contains("selectable")) {
         deselect()
     }
 }))
 
 
-const asClassNamesArgument = (...classNames) => classNames.filter((className) => typeof className === "string").join(" ")
-
-export const AstObjectUiWrapper = observer(({ astObject, ancestors, setValue, className, children, leftTransform, rightTransform, /* Exercise 13.7: */showType }) => {
-    let hoverText = `Concept: ${astObject.concept}\n`
-    // Exercise 13.7:
-    if (showType) {
-        hoverText += `Type: ${typeAsText(typeOf(astObject, ancestors))}\n`
-    }
-    const issues = issuesFor(astObject, ancestors)
+export const AstObjectUiWrapper = observer(({ className, astObject, deleteAstObject, issues, children, leftTransform, rightTransform, /* Exercise 13.7: */ type }) => {
+    let hoverText = ""
     const hasIssues = issues.length > 0
     if (hasIssues) {
         hoverText += "Issues:\n"
         hoverText += issues.map((issue) => `\t${issue}\n`).join("")
     }
+    // Exercise 13.7:
+    if (type) {
+        if (hasIssues) {
+            hoverText += "\n"
+        }
+        hoverText += `Concept: ${astObject.concept}\n`
+        hoverText += `Type: ${typeAsText(typeOf(astObject, ancestors))}\n`
+    }
     const isSideTransformable = !!leftTransform || !!rightTransform
     return <div
-        className={asClassNamesArgument(className, "selectable", selection.selected === astObject && "selected", isSideTransformable && "side-transformable")}
+        className={asClassNameArgument(className, "selectable", (selection.selected === astObject) && "selected", isSideTransformable && "side-transformable")}
         title={hoverText}
         onClick={action((event) => {
             event.stopPropagation()
@@ -45,8 +46,8 @@ export const AstObjectUiWrapper = observer(({ astObject, ancestors, setValue, cl
             if (selection.selected === astObject && event.key === "Backspace" || event.key === "Delete") {
                 event.preventDefault()
                 event.stopPropagation()
-                if (typeof setValue === "function") {
-                    setValue()
+                if (typeof deleteAstObject === "function") {
+                    deleteAstObject()
                 }
             }
         })}
@@ -65,7 +66,7 @@ export const AstObjectUiWrapper = observer(({ astObject, ancestors, setValue, cl
 })
 
 
-const AddNewButton = ({ buttonText, actionFunction }) =>
+export const AddNewButton = ({ buttonText, actionFunction }) =>
     <button
         className="add-new"
         tabIndex={-1}
@@ -74,5 +75,4 @@ const AddNewButton = ({ buttonText, actionFunction }) =>
             actionFunction()
         })}
     >{buttonText}</button>
-module.exports.AddNewButton = AddNewButton
 

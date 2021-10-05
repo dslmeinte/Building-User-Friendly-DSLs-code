@@ -10,7 +10,6 @@ const dataPath = join(__dirname, "data")
 const contentsPath = join(dataPath, "contents.json")
 
 const readContents = () => existsSync(contentsPath) ? readJson(contentsPath) : {}
-
 const writeContents = (contents) => writeJson(contentsPath, contents)
 module.exports.writeContents = writeContents
 
@@ -18,7 +17,7 @@ module.exports.writeContents = writeContents
 const metaDataPath = join(dataPath, "metaData.json")
 const dslVersionKey = "DSL-version"
 
-const readMetaData = () => existsSync(contentsPath) ? readJson(metaDataPath) : { [dslVersionKey]: undefined }
+const readMetaData = () => existsSync(metaDataPath) ? readJson(metaDataPath) : { [dslVersionKey]: undefined }
 const writeMetaData = (metaData) => writeJson(metaDataPath, metaData)
 
 

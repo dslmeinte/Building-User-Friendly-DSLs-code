@@ -29,7 +29,7 @@ const rentalPeriodAttribute = {
     concept: "Data Attribute",
     settings: {
         "name": "rental period",
-        "type": "period in days"
+        "type": "date range"
     }
 }
 
@@ -51,7 +51,7 @@ const rentalPeriodAttribute = {
     concept: "Data Attribute",
     settings: {
         "name": "rental period",
-        "type": "period in days"
+        "type": "date range"
     }
 }
 const rentalPriceBeforeDiscountAttribute = {
@@ -93,7 +93,7 @@ const rental = {
 // Encode the initial values of attributes 2 and 3, and retrofit the encodings of those to contain the initial values:
 
 const rentalPriceBeforeDiscountInitialValue = {
-    concept: "Number Literal",
+    concept: "Number",
     settings: {
         "value": "0.0"
     }
@@ -108,7 +108,7 @@ const rentalPriceBeforeDiscountAttribute = {
 }
 
 const discountInitialValue = {
-    concept: "Number Literal",
+    concept: "Number",
     settings: {
         "value": "0"
     }

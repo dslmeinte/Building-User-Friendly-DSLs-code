@@ -8,23 +8,36 @@ span.keyword {
     color: rgb(100, 100, 100);
 }
 
+.ws-right {
+    margin-right: 0.5rem;
+}
+
+.ws-left {
+    margin-left: 0.5rem;
+}
+
+.ws-both {
+    margin-right: 0.5rem;
+    margin-left: 0.5rem;
+}
+
 span.value {
     padding-left: 0.15em;
-    padding-right: 0.25em;
+    padding-right: 0.15em;
     background-color: rgb(228, 228, 228);
     border-radius: 5px;
 }
 
-div.attributes {
+div.section {
     margin-top: 1em;
     margin-left: 1em;
 }
 
-div.attributes div.attribute {
+div.attribute {
     margin-left: 1em;
 }
 
-span.quoted-type {
+span.enum-like {
     font-style: italic;
 }
 
@@ -32,7 +45,7 @@ div.inline {
     display: inline-block;
 }
 
-span.data-reference {
+span.reference {
     font-style: italic;
     color: blue;
     text-decoration: underline;
@@ -57,7 +70,7 @@ select {
 button.add-new {
     font-size: 18pt;
     border-radius: 10px;
-    border: 0px;
+    border: 0;
     background-color: rgb(49, 161, 49);
     cursor: pointer;
 }

@@ -1,159 +1,137 @@
 import React from "react"
-import { action, observable } from "mobx"
+import { observable } from "mobx"
 import { observer } from "mobx-react"
-import { generate as newId } from "shortid"
 
-import { isAstObject, placeholderAstObject } from "../ast"
-import { issuesFor } from "../constraints"
-import { Selectable } from "./selectable"
+import { astReferenceTo, isAstObject, newAstObject, placeholderAstObject } from "../common/ast"
+import { AddNewButton, AstObjectUiWrapper } from "./support-components"
 import { DropDownValue, NumberValue, TextValue } from "./value-components"
+import { issuesFor } from "../language/constraints"
 
 
-const AddNewButton = ({ buttonText, actionFunction }) =>
-    <button
-        className="add-new"
-        tabIndex={-1}
-        onClick={action((event) => {
-            event.stopPropagation()
-            actionFunction()
-        })}
-    >{buttonText}</button>
+const indefiniteArticleFor = (nextWord) => "a" + ((typeof nextWord === "string" && nextWord.toLowerCase().match(/^[aeiou]/)) ? "n" : "")
 
 
-// Refactored-out component for 6th item in Exercise of §9.1.3:
-const IssuesWrapper = (({ issues, className, children }) => <div title={issues.join("\n")} className={className}>
-    {issues.length > 0 && <span className="issue-marker">&#9888;</span>}
-    {children}
-</div>)
+export const Projection = observer(({ astObject, ancestors, replaceWith }) => {
+    if (isAstObject(astObject)) {
 
-
-const indefiniteArticleFor = (nextWord) => "a" + ((typeof nextWord === "string" && nextWord.match(/^[aeiou]/)) ? "n" : "")
-
-export const Projection = observer(({ value, deleteValue, ancestors }) => {
-    if (isAstObject(value)) {
-        const { settings } = value
+        const { settings } = astObject
         const editStateFor = (propertyName) => observable({
             value: settings[propertyName],
             inEdit: false,
             setValue: (newValue) => { settings[propertyName] = newValue }
         })
-        const issues = issuesFor(value, ancestors)
+        const issues = issuesFor(astObject, ancestors)
+
         // (cases are in alphabetical order of concept labels:)
-        switch (value.concept) {
+        switch (astObject.concept) {
+
             case "Attribute Reference": {
                 const recordType = ancestors.find((ancestor) => ancestor.concept === "Record Type")
                 const attributes = recordType.settings["attributes"]
-                return <IssuesWrapper issues={issues} className="inline">
-                    <Selectable className="inline" astObject={value} deleteAstObject={deleteValue}>
-                        <span className="keyword">the </span>
-                        <DropDownValue
-                            editState={observable({
-                                // Only navigate reference relation when there's one:
-                                value: settings["attribute"] && settings["attribute"].ref.settings["name"],
-                                inEdit: false,
-                                setValue: (newValue) => {
-                                    settings["attribute"] = {
-                                        ref: attributes.find((attribute) => attribute.settings["name"] === newValue)
-                                    }
-                                }
-                            })}
-                            className="data-reference"
-                            options={attributes.map((attribute) => attribute.settings["name"])}
-                            actionText="(choose an attribute to reference)"
-                            placeholderText="<attribute>"
-                        />
-                    </Selectable>
-                </IssuesWrapper>
+                return <AstObjectUiWrapper className="inline" astObject={astObject} issues={issues} deleteAstObject={replaceWith}>
+                    <span className="keyword ws-right">the</span>
+                    <DropDownValue
+                        editState={observable({
+                            // Only navigate reference relation when there's one:
+                            value: settings["attribute"] && settings["attribute"].ref.settings["name"],
+                            inEdit: false,
+                            setValue: (newValue) => {
+                                settings["attribute"] = astReferenceTo(
+                                    attributes.find((attribute) => attribute.settings["name"] === newValue)
+                                )
+                            }
+                        })}
+                        className="reference"
+                        options={attributes.map((attribute) => attribute.settings["name"])}
+                        actionText="(choose an attribute to reference)"
+                        placeholderText="<attribute>"
+                    />
+                </AstObjectUiWrapper>
             }
-            case "Data Attribute": return <IssuesWrapper issues={issues}>
-                    <Selectable className="attribute" astObject={value} deleteAstObject={deleteValue}>
-                        <span className="keyword">the</span>&nbsp;
-                        <TextValue editState={editStateFor("name")} placeholderText="<name>"/>&nbsp;
-                        <span className="keyword">is {indefiniteArticleFor(settings["type"])}</span>&nbsp;
-                        <DropDownValue
-                            className="value quoted-type"
-                            editState={editStateFor("type")}
-                            options={["amount", "percentage", "period in days"]}
-                            placeholderText="<type>"
-                        />&nbsp;
-                        {settings["initial value"]
-                            ? <div className="inline">
-                                <span className="keyword">initially</span>&nbsp;
-                                {settings["initial value"] === placeholderAstObject
-                                    ? <DropDownValue
-                                        editState={observable({
-                                            inEdit: true,
-                                            setValue: (newValue) => {
-                                                settings["initial value"] = observable({
-                                                    id: newId(),
-                                                    concept: newValue,
-                                                    settings: {}
-                                                })
-                                            }
-                                        })}
-                                        options={[
-                                            "Attribute Reference",
-                                            "Number Literal"
-                                        ]}
-                                        placeholderText="<initial value>"
-                                        actionText="(choose concept for initial value)"
-                                    />
-                                    : <Projection value={settings["initial value"]} ancestors={[value, ...ancestors]}
-                                                  deleteValue={() => {
-                                                      delete settings["initial value"]
-                                                  }}
-                                    />
-                                }
-                            </div>
-                            : <AddNewButton buttonText="+ initial value" actionFunction={() => {
-                                settings["initial value"] = placeholderAstObject
-                            }} />
+
+            case "Data Attribute": return <AstObjectUiWrapper className="attribute" astObject={astObject} issues={issues} deleteAstObject={replaceWith}>
+                <span className="keyword ws-right">the</span>
+                <TextValue editState={editStateFor("name")} placeholderText="<name>" />
+                <span className="keyword ws-both">is {indefiniteArticleFor(settings["type"])}</span>
+                <DropDownValue
+                    className="value enum-like ws-right"
+                    editState={editStateFor("type")}
+                    options={[ "amount", "date range", "percentage" ]}
+                    placeholderText="<type>"
+                />
+                {settings["initial value"]
+                    ? <div className="inline">
+                        <span className="keyword ws-right">initially</span>
+                        {settings["initial value"] === placeholderAstObject
+                            ? <DropDownValue
+                                editState={observable({
+                                    inEdit: true,
+                                    setValue: (newValue) => {
+                                        settings["initial value"] = observable(newAstObject(newValue))
+                                    }
+                                })}
+                                options={[
+                                    "Attribute Reference",
+                                    "Number"
+                                ]}
+                                placeholderText="<initial value>"
+                                actionText="(choose concept for initial value)"
+                            />
+                            : <Projection
+                                astObject={settings["initial value"]}
+                                ancestors={[ astObject, ...ancestors ]}
+                                replaceWith={() => {
+                                    delete settings["initial value"]
+                                }}
+                            />
                         }
-                    </Selectable>
-            </IssuesWrapper>
-            case "Number Literal": {
+                    </div>
+                    : <AddNewButton buttonText="+ initial value" actionFunction={() => {
+                        settings["initial value"] = placeholderAstObject
+                    }} />
+                }
+            </AstObjectUiWrapper>
+
+            case "Number": {
                 const attribute = ancestors.find((ancestor) => ancestor.concept === "Data Attribute")
                 const attributeType = attribute.settings["type"]
-                return <IssuesWrapper issues={issues} className="inline">
-                    <Selectable className="inline" astObject={value} deleteAstObject={deleteValue}>
-                        {attributeType === "amount" && <span className="keyword">$</span>}
-                        <NumberValue editState={editStateFor("value")} placeholderText="<number>" />
-                        {attributeType === "percentage" && <span className="keyword">%</span>}
-                        {attributeType === "period in days" && <span className="keyword">&nbsp;days</span>}
-                    </Selectable>
-                </IssuesWrapper>
+                return <AstObjectUiWrapper className="inline" astObject={astObject} issues={issues} deleteAstObject={replaceWith}>
+                    {attributeType === "amount" && <span className="keyword">$</span>}
+                    <NumberValue editState={editStateFor("value")} placeholderText="<number>" />
+                    {attributeType === "date range" && <span className="keyword ws-left">days</span>}
+                    {attributeType === "percentage" && <span className="keyword">%</span>}
+                </AstObjectUiWrapper>
             }
-            case "Record Type": return <IssuesWrapper issues={issues}>
-                    <Selectable astObject={value}>
-                    <div>
-                        <span className="keyword">Record Type</span>&nbsp;
-                        <TextValue editState={editStateFor("name")} placeholderText="<name>" />
-                    </div>
-                    <div className="attributes">
-                        <div><span className="keyword">attributes:</span></div>
-                        {settings["attributes"].map((attribute, index) =>
-                            <Projection value={attribute} key={index} ancestors={[ value, ...ancestors ]}
-                                        deleteValue={() => {
-                                            // Remove this attribute from the list:
-                                            settings["attributes"].splice(index, 1)
-                                        }}
-                            />
-                        )}
-                        <AddNewButton buttonText="+ attribute" actionFunction={() => {
-                            settings["attributes"].push({
-                                id: newId(),
-                                concept: "Data Attribute",
-                                settings: {}
-                            })
-                        }} />
-                    </div>
-                </Selectable>
-            </IssuesWrapper>
-            default: return <div>
-                <em>{"No projection defined for concept: " + value.concept}</em>
+
+            case "Record Type": return <AstObjectUiWrapper astObject={astObject} issues={issues} deleteAstObject={replaceWith}>
+                <div>
+                    <span className="keyword ws-right">Record Type</span>
+                    <TextValue editState={editStateFor("name")} placeholderText="<name>" />
+                </div>
+                <div className="section">
+                    <div><span className="keyword">attributes:</span></div>
+                    {settings["attributes"].map((attribute, index) =>
+                        <Projection
+                            astObject={attribute}
+                            ancestors={[ astObject, ...ancestors ]}
+                            replaceWith={() => {
+                                settings["attributes"].splice(index, 1)
+                            }}
+                            key={index}
+                        />
+                    )}
+                    <AddNewButton buttonText="+ attribute" actionFunction={() => {
+                        settings["attributes"].push(newAstObject("Data Attribute"))
+                    }} />
+                </div>
+            </AstObjectUiWrapper>
+
+            default: return <div className="inline">
+                <em>{"No projection defined for concept: " + astObject.concept}</em>
             </div>
         }
     }
-    return <em>{"No projection defined for value: " + value}</em>
+
+    return <em>{"No projection defined for value: " + astObject}</em>
 })
 

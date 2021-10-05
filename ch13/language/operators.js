@@ -1,6 +1,6 @@
 const { isAstObject } = require("../common/ast")
 
-// The operators is ascending order of precedence:
+// The operator groups are in ascending order of precedence:
 const operatorsPerPrecedence = [ [ "-", "+" ], [ "/", "*", "of" ], [ "^" ] ]
 /**
  * Computes an integer rank for the operator precedence.

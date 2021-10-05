@@ -1,53 +1,40 @@
-const { readFile, writeFileSync } = require("fs")
-const { join } = require("path")
+const { readVersionedContents, writeContents } = require("./storage")
 
-const options = { encoding: "utf8" }
-
-const contentsPath = join(__dirname, "data/contents.json")
-
-let contents = null
-
+const versionedContents = readVersionedContents()
 // for Exercise 10.4:
-const { dslVersion } = require("./metaData")
+const dslVersion = versionedContents.version    // (This implies: no AST migrations while the server is running.)
+let contents = versionedContents.contents
 
+const express = require("express")
+const server = express()
 
-readFile(contentsPath, options, (_, data) => {
-    contents = JSON.parse(data.toString())
+server.get("/contents", (request, response) => {
+    // for Exercise 10.4:
+    response.header("X-DSL-Version", dslVersion)
+    response.json(contents)
+})
 
-    const express = require("express")
-    const server = express()
+server.use(express.json({ limit: "1gb" }))
+server.put("/contents", (request, response) => {
+    const newContents = request.body
+    writeContents(newContents)
+    contents = newContents
+    response.send()
+})
 
-    server.get("/ast", (request, response) => {
-        // for Exercise 10.4:
-        response.header("X-DSL-Version", dslVersion())
-        response.json(contents)
-    })
+// endpoint to generate src/runtime/index.jsx from contents:
+const { generatedIndexJsx } = require("../generator/indexJsx-template")
+const { deserialize } = require("../common/ast")
+server.get("/contents/indexJsx", (request, response) => {
+    response.set("Content-Type", "text/plain")
+    response.send(generatedIndexJsx(deserialize(contents)))
+})
 
-    server.use(express.json({ limit: "1gb" }))
-    server.put("/ast", (request, response) => {
-        const newContents = request.body
-        writeFileSync(contentsPath, JSON.stringify(newContents, null, 2), options)
-        contents = newContents
-        response.send()
-    })
+const { join } = require("path")
+server.use(express.static(join(__dirname, "../dist")))
 
-    // endpoint to generate src/runtime/index.jsx from contents:
-    const { generatedIndexJsx } = require("../generator/indexJsx-template")
-    const { deserialize } = require("../ast")
-    server.get("/ast/indexJsx", (request, response) => {
-        response.set('Content-Type', 'text/plain')
-        response.send(generatedIndexJsx(deserialize(contents)))
-    })
-
-    // needs to be after /ast routes:
-    const Parcel = require("parcel-bundler")
-    const bundler = new Parcel(join(__dirname, "../frontend/index.html"))
-    server.use(bundler.middleware())
-    // TODO  switch between development and production
-
-    const port = 8080
-    server.listen(port, () => {
-        console.log(`Server started on: http://localhost:${port}/`)
-    })
+const port = 8080
+server.listen(port, () => {
+    console.log(`Server started on: http://localhost:${port}/`)
 })
 

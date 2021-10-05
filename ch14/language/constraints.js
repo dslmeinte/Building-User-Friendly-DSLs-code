@@ -1,18 +1,22 @@
-const { firstAncestorOfConcept, isAstObject, isAstReference, placeholderAstObject } = require("../common/ast")
-const { cycleWith } = require("../generator/dependency-utils")
+const { isAstObject, isAstReference, firstAncestorOfConcept, placeholderAstObject } = require("../common/ast")
+const { cycleWith } = require("../common/dependency-utils")
+const { attributesAffectedBy, quotedNamesOf, referencedAttributesIn, referencedAttributesInValueOf } = require("./queries")
 const { camelCase } = require("../generator/template-utils")
-const { attributesAffectedBy, quotedNamesOf, referencedAttributesIn, referencedAttributesInValue } = require("./queries")
 const { areEqual, builtInTypes, isNumberType, typeAsText, typeOf } = require("./type-system")
 const { isMonth, isWeekDay } = require("./time-units")
 
 
 const isNonEmptyString = (value) => typeof value === "string" && value.trim().length > 0
 
-
 const issuesFor = (astObject, ancestors) => {
     const issues = []
     const { settings } = astObject
 
+    const issueIfEmpty = (propertyName, message) => {
+        if (!isNonEmptyString(settings["name"])) {
+            issues.push(message)
+        }
+    }
     const issueIfUndefined = (propertyName, message) => {
         if (settings[propertyName] === undefined) {
             issues.push(message)
@@ -24,14 +28,10 @@ const issuesFor = (astObject, ancestors) => {
             issues.push(message)
         }
     }
-    const issueIfEmpty = (propertyName, message) => {
-        if (!isNonEmptyString(settings["name"])) {
-            issues.push(message)
-        }
-    }
 
     // (Cases are in alphabetical order of concept labels:)
     switch (astObject.concept) {
+
         case "Attribute": {
             issueIfEmpty("name", "An attribute must have a name")
             issueIfUndefined("type", "An attribute must have a type")
@@ -46,7 +46,7 @@ const issuesFor = (astObject, ancestors) => {
                         + `\n\tbut they are: '${typeAsText(typeOfAttribute)}', resp., '${typeAsText(typeOfValue)}'`)
                 }
             }
-            const cycle = cycleWith(astObject, referencedAttributesInValue)
+            const cycle = cycleWith(astObject, referencedAttributesInValueOf)
             if (cycle.length > 0) {
                 issues.push("This attribute is part of a cycle through attribute references in attributes' values:\n\t"
                     + quotedNamesOf(cycle).join(" -> ") + " -> [go back to first]..."
@@ -63,12 +63,14 @@ const issuesFor = (astObject, ancestors) => {
             }
             break
         }
+
         case "Attribute Reference": {
             if (!isAstReference(settings["attribute"])) {
                 issues.push("The attribute to reference is not yet specified")
             }
             break
         }
+
         case "Binary Operation": {
             issueIfNotAstObject("left operand", "The left operand must be defined")
             issueIfUndefined("operator", "The operator must be defined")
@@ -76,6 +78,7 @@ const issuesFor = (astObject, ancestors) => {
             issues.push(...typeIssuesForBinaryOperator(astObject, ancestors))
             break
         }
+
         case "Business Rule": {
             issueIfNotAstObject("condition", "A business rule must have a condition")
             if (isAstObject(settings["condition"])) {
@@ -83,7 +86,7 @@ const issuesFor = (astObject, ancestors) => {
                 if (!areEqual(typeOfCondition, builtInTypes["boolean"])) {
                     issues.push(`The condition of a business rule must produce a boolean value, but its type is '${typeAsText(typeOfCondition)}'`)
                 }
-                // Exercise 14.7:
+                // Exercise 14.8:
                 const affectedAttributes = attributesAffectedBy(firstAncestorOfConcept("Record Type", ancestors).settings["business rules"])
                 const inCommon = referencedAttributesIn(settings["condition"]).filter((attribute) => affectedAttributes.indexOf(attribute) > -1)
                 if (inCommon.length > 0) {
@@ -95,29 +98,13 @@ const issuesFor = (astObject, ancestors) => {
             issueIfNotAstObject("consequence", "A business rule must have a consequence")
             break
         }
-        case "Increment Effect": {
-            issueIfNotAstObject("value", "The value must be defined")
-            const typeOfValue = typeOf(settings["value"], [ astObject, ...ancestors ])
-            const attributeRefObject = settings["attribute reference"].settings["attribute"]
-            if (isAstReference(attributeRefObject)) {
-                const reffedAttribute = attributeRefObject.ref
-                const typeOfReffedAttribute = typeOf(reffedAttribute, [ astObject, ...ancestors ])
-                if (!areEqual(typeOfValue, typeOfReffedAttribute)) {
-                    issues.push(`The type of the value and the referenced attribute of this effect must match,`
-                        + `\n\tbut they are: '${typeAsText(typeOfValue)}', resp., '${typeAsText(typeOfReffedAttribute)}'`)
-                }
-                if (reffedAttribute.settings["value kind"] !== "initially" || !isAstObject(reffedAttribute.settings["value"])) {
-                    issues.push(`An increment effect must reference an attribute with an initial value`)
-                }
-            }
-            break
-        }
-        case "Interval Operation": {
+
+        case "Date Range Operation": {
             issueIfNotAstObject("operand", "The operand must be defined")
             if (isAstObject(settings["operand"])) {
                 const typeOfOperand = typeOf(settings["operand"], [ astObject, ...ancestors ])
-                if (!areEqual(typeOfOperand, builtInTypes["period in days"])) {
-                    issues.push(`The left-hand side (operand) of this operation must be a 'period in days', but it is '${typeAsText(typeOfOperand)}'`)
+                if (!areEqual(typeOfOperand, builtInTypes["date range"])) {
+                    issues.push(`The left-hand side (operand) of this operation must be a 'date range', but it is '${typeAsText(typeOfOperand)}'`)
                 }
             }
             issueIfUndefined("operator", "The operator must be defined")
@@ -141,18 +128,40 @@ const issuesFor = (astObject, ancestors) => {
             }
             break
         }
+
+        case "Increment Effect": {
+            issueIfNotAstObject("value", "The value must be defined")
+            const typeOfValue = typeOf(settings["value"], [ astObject, ...ancestors ])
+            const attributeRefObject = settings["attribute reference"].settings["attribute"]
+            if (isAstReference(attributeRefObject)) {
+                const reffedAttribute = attributeRefObject.ref
+                const typeOfReffedAttribute = typeOf(reffedAttribute, [ astObject, ...ancestors ])
+                if (!areEqual(typeOfValue, typeOfReffedAttribute)) {
+                    issues.push(`The type of the value and the referenced attribute of this effect must match,`
+                        + `\n\tbut they are: '${typeAsText(typeOfValue)}', resp., '${typeAsText(typeOfReffedAttribute)}'`)
+                }
+                if (reffedAttribute.settings["value kind"] !== "initially" || !isAstObject(reffedAttribute.settings["value"])) {
+                    issues.push(`An increment effect must reference an attribute with an initial value`)
+                }
+            }
+            break
+        }
+
         case "Number": {
             issueIfUndefined("value", "The number's value must be defined")
             break
         }
+
         case "Parentheses": {
             issueIfNotAstObject("sub", "The sub expression must be defined")
             break
         }
+
         case "Record Type": {
             issueIfEmpty("name", "A record type must have a name")
             break
         }
+
         // No default-case: some concepts might genuinely have no constraints defined on them.
     }
     return issues

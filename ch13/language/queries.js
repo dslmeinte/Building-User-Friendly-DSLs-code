@@ -18,10 +18,14 @@ const referencedAttributesIn = (astObject) => [ ...new Set(     // `[ ...new Set
  * @param attribute An AST object with concept label "Attribute".
  * @return An array of attribute AST objects - possibly empty.
  */
-const referencedAttributesInValue = (attribute) => referencedAttributesIn(attribute.settings["value"])
-module.exports.referencedAttributesInValue = referencedAttributesInValue
+const referencedAttributesInValueOf = (attribute) => referencedAttributesIn(attribute.settings["value"])
+module.exports.referencedAttributesInValueOf = referencedAttributesInValueOf
 
 
+/**
+ * @param astObject - an AST object with a string-valued "name" property.
+ * @return the name of the given AST object (as a string), with (single) quotes around it.
+ */
 const nameOf = (astObject) => astObject.settings["name"]
 module.exports.nameOf = nameOf
 

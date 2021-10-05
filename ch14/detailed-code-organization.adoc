@@ -115,7 +115,7 @@
 | Implements several stateless React component functions for the Runtime UI
 
 | &emsp; `dates.js`
-| Implements a `Period` class and date functions
+| Implements a `DateRange` class and date functions
 
 | &emsp; `index.html`
 | The entrypoint for the Runtime UI that "`kicks off`" `index.jsx`

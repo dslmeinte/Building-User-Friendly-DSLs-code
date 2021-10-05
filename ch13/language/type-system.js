@@ -27,8 +27,8 @@ module.exports.untype = untype
  */
 const builtInTypes = {
     "amount": numberType("amount", "$"),
+    "date range": typeObject("date range", "Interval Type", { unit: "day" }),
     "percentage": numberType("percentage", "%"),
-    "period in days": typeObject("period in days", "Interval Type", { unit: "day" }),
     [untypeName]: untype
 }
 module.exports.builtInTypes = builtInTypes
@@ -118,7 +118,7 @@ const typeAsText = (typeObject) => {
     switch (typeObject.concept) {
         case "Interval Type": {
             switch (settings["unit"]) {
-                case "day": return "period in days"
+                case "day": return "date range"
                 default: return `Interval Type(unit='${settings["unit"]}')`
             }
         }

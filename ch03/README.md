@@ -8,7 +8,7 @@ This directory contains all the source code in chapter arranged/subdivided as fo
 * [Source code "snippets" in section § 3.2](snippets-section3.2.js)
 * [Listing 3.3.](./listing3.3.js)
 * [Listing 3.4.](./listing3.4.js)
-* [Listing 3.5.](./listing3.5.js)
-* [Listing 3.6.: `ast.js`](./ast.js)
+* [Listings 3.5. and 3.6.](./listings3.5-6.js)
+* [Listing 3.7.: `ast.js`](./common/ast.js)
 * [Reference solutions to the exercises at the end of section § 3.2](./exercises-section3.2.js)
 

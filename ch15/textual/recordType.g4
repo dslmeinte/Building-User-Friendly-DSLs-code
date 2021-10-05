@@ -2,7 +2,7 @@ grammar recordType;
 
 STRING: '"' [A-Za-z0-9 ]+ '"' ;
 
-type: 'amount' | 'percentage' | 'period in days' ;
+type: 'amount' | 'date range' | 'percentage' ;
 
 WS: (' ' | '\t' | '\n')+ ;
 

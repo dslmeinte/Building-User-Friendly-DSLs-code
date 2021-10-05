@@ -1,10 +1,9 @@
 # Code from chapter 12
 
 
-## Code organization, per file
+## Code organization, per directory
 
 * [The frontend code](./frontend) - bundled with Parcel, and served through the backend.
-    This is (or should be) identical to the frontend code from chapter 8.
 
 * [The backend code](./backend).
     Run this as follows:

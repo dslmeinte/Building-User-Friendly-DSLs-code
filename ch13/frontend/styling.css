@@ -8,15 +8,15 @@ span.keyword {
     color: rgb(100, 100, 100);
 }
 
-.whitespace-right {
+.ws-right {
     margin-right: 0.5rem;
 }
 
-.whitespace-left {
+.ws-left {
     margin-left: 0.5rem;
 }
 
-.whitespace-both {
+.ws-both {
     margin-right: 0.5rem;
     margin-left: 0.5rem;
 }
@@ -26,23 +26,22 @@ span.value {
     padding-right: 0.15em;
     background-color: rgb(228, 228, 228);
     border-radius: 5px;
-    white-space: pre;   /* TODO  back-propagate? / still necessary? */
 }
 
-div.attributes {
+div.section {
     margin-top: 1em;
     margin-left: 1em;
 }
 
-div.attributes div.attribute {
+div.attribute {
     margin-left: 1em;
 }
 
-span.enum-like {   /* TODO  back-propagate! */
+span.enum-like {
     font-style: italic;
 }
 
-div.inline, div.inline > div {
+div.inline {
     display: inline-block;
 }
 
@@ -95,6 +94,7 @@ select option.action {
 
 div.selected {
     background-color: khaki;
+    width: max-content;
     outline: none;
 }
 

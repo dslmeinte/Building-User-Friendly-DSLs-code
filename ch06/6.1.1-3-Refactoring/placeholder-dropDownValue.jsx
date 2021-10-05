@@ -7,11 +7,6 @@ const isMissing = (value) => value === null || value === undefined
 
 
 
-
-
-
-
-
 export const DropDownValue = observer(({ editState, className, options, placeholderText }) =>
     editState.inEdit
         ? <select
@@ -30,12 +25,16 @@ export const DropDownValue = observer(({ editState, className, options, placehol
                     editState.inEdit = false
                 }
             })}
-        >{options.map((option, index) => <option key={index}>{option}</option>)}</select>
+            className={className}
+        >
+            {options.map((option, index) =>
+                <option key={index}>{option}</option>
+            )}
+        </select>
         : <span
-            className={isMissing(editState.value) ? "value-missing" : className}
+            className={className + (isMissing(editState.value) ? " value-missing" : "")}
             onClick={action((_) => {
                 editState.inEdit = true
             })}
         >{isMissing(editState.value) ? placeholderText : editState.value}</span>
 )
-

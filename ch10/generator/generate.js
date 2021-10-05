@@ -1,38 +1,35 @@
-const { readFile, writeFileSync } = require("fs")
 const { join } = require("path")
-const { deserialize, isAstObject } = require("../ast")
-const { issuesFor } = require("../constraints")
 
-const options = { encoding: "utf8" }
-
-const astPath = join(__dirname, "../backend/data/contents.json")
-const indexJsxPath = join(__dirname, "../runtime/index.jsx")
-
+const { deserialize, isAstObject } = require("../common/ast")
+const { writeString } = require("../common/file-utils")
+const { readVersionedContents } = require("../backend/storage")
+const { issuesFor } = require("../language/constraints")
 const { generatedIndexJsx } = require("./indexJsx-template")
 
-readFile(astPath, options, (_, data) => {
-    const serializedAst = JSON.parse(data)
-    const deserializedAst = deserialize(serializedAst)
+const indexJsxPath = join(__dirname, "../runtime/index.jsx")
 
-    const printIssue = (issue, astObject) => {
-        console.log(`[ERROR] on AST object with id='${astObject.id}', concept='${astObject.concept}'; message: "${issue}"`)
-    }
+const serializedAst = readVersionedContents().contents
+const deserializedAst = deserialize(serializedAst)
 
-    const printAllIssuesFor = (value, ancestors) => {
-        if (isAstObject(value)) {
-            issuesFor(value, ancestors).forEach((issue) => printIssue(issue, value))
-            for (const propertyName in value.settings) {
-                printAllIssuesFor(value.settings[propertyName], [ ...ancestors, value ])
-            }
-        }
-        if (Array.isArray(value)) {
-            value.forEach((item) => printAllIssuesFor(item, ancestors))
+
+const printIssue = (issue, astObject) => {
+    console.log(`[ERROR] on AST object with id='${astObject.id}', concept='${astObject.concept}'; message: "${issue}"`)
+}
+
+const printAllIssuesFor = (astObject, ancestors) => {
+    if (isAstObject(astObject)) {
+        issuesFor(astObject, ancestors).forEach((issue) => printIssue(issue, astObject))
+        for (const propertyName in astObject.settings) {
+            printAllIssuesFor(astObject.settings[propertyName], [ astObject, ...ancestors ])
         }
     }
+    if (Array.isArray(astObject)) {
+        astObject.forEach((item) => printAllIssuesFor(item, ancestors))
+    }
+}
 
-    printAllIssuesFor(deserializedAst, [])
+printAllIssuesFor(deserializedAst, [])
 
 
-    writeFileSync(indexJsxPath, generatedIndexJsx(deserializedAst), options)
-})
+writeString(indexJsxPath, generatedIndexJsx(deserializedAst))
 

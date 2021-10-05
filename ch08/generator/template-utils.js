@@ -1,5 +1,5 @@
 /**
- * @returns {string} - the given string in camel-case.
+ * @returns {string} The given string in camel-case.
  */
 const camelCase = (str) => str
     .toLowerCase()
@@ -8,7 +8,7 @@ const camelCase = (str) => str
 module.exports.camelCase = camelCase
 
 /**
- * @returns {string} - the given string with the first character converted to upper case (if possible).
+ * @returns {string} The given string with the first character converted to upper case (if possible).
  */
 const withFirstUpper = (str) => str.charAt(0).toUpperCase() + str.substring(1)
 module.exports.withFirstUpper = withFirstUpper
@@ -18,7 +18,7 @@ const flattenTruthies = (nestedStrings) => nestedStrings.flat(Infinity).filter((
 
 // The following is part of a reference solution for the last part of Exercise 8.4 (of section § 8.4.3):
 /**
- * @returns {function(*=): *} - a function that maps over a single string using mapString or an array of strings using mapStrings.
+ * @returns {function(*=): *} A function that maps over a single string using mapString or an array of strings using mapStrings.
  * If an array is given, that array is completely (i.e.: recursively) flattened first, before the mapStrings function is applied.
  */
 const mapNestedString = (mapString, mapStrings) => (nestedString) =>
@@ -29,7 +29,7 @@ const mapNestedString = (mapString, mapStrings) => (nestedString) =>
 
 const withNewlineEnsured = (str) => str + (str.endsWith("\n") ? "" : "\n")
 /**
- * @returns {string} - the given nested string joined as one string, taking care of proper newline endings.
+ * @returns {string} The given nested string joined as one string, taking care of proper newline endings.
  */
 const asString = (nestedString) => Array.isArray(nestedString)
     ? flattenTruthies(nestedString)
@@ -41,7 +41,7 @@ const asString = (nestedString) => Array.isArray(nestedString)
 module.exports.asString = asString
 
 /**
- * @returns {function} - a function to indent a nested string.
+ * @returns {function} A function to indent a nested string.
  * The function always returns strings.
  */
 const indent = (indentLevel) => {

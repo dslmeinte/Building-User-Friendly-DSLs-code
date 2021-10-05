@@ -1,7 +1,8 @@
-const { isAstObject, isAstReference } = require("../ast")
-const { requiresParentheses } = require("../operators")
+const { isAstObject, isAstReference } = require("../common/ast")
+const { dependencyOrderOf } = require("../common/dependency-utils")
+const { requiresParentheses } = require("../language/operators")
+const { isComputedAttribute, referencedAttributesInValueOf } = require("../language/queries")
 const { asString, camelCase, indent, withFirstUpper } = require("./template-utils")
-const { dependencyOrderOf, isComputedAttribute } = require("./attribute-utils")
 
 const jsOperatorFor = (operator) => {
     switch (operator) {
@@ -12,12 +13,12 @@ const jsOperatorFor = (operator) => {
     }
 }
 
-const expressionFor = (value, ancestors) => {
-    if (!isAstObject(value)) {
-        return `/* [GENERATION PROBLEM] value "${value}" isn't handled in expressionFor */`
+const expressionFor = (astObject, ancestors) => {
+    if (!isAstObject(astObject)) {
+        return `/* [GENERATION PROBLEM] value "${astObject}" isn't handled in expressionFor */`
     }
-    const { settings } = value
-    switch (value.concept) {
+    const { settings } = astObject
+    switch (astObject.concept) {
         case "Attribute Reference": {
             const targetAttribute = isAstReference(settings["attribute"]) && settings["attribute"].ref
             return targetAttribute ? `this.${camelCase(targetAttribute.settings["name"])}` : `/* [GENERATION PROBLEM] attribute reference is undefined */`
@@ -25,17 +26,17 @@ const expressionFor = (value, ancestors) => {
         case "Binary Operation": {
             const { operator } = settings
             // Exercise 12.5:
-            const newAncestors = [ value, ...ancestors ]
-            const withoutParentheses = `${expressionFor(settings["left operand"], newAncestors)} ${jsOperatorFor(operator)} ${expressionFor(settings["right operand"], newAncestors)}`
-            return requiresParentheses(value, ancestors[0]) ? `(${withoutParentheses})` : withoutParentheses
+            const nextAncestors = [ astObject, ...ancestors ]
+            const withoutParentheses = `${expressionFor(settings["left operand"], nextAncestors)} ${jsOperatorFor(operator)} ${expressionFor(settings["right operand"], nextAncestors)}`
+            return requiresParentheses(astObject, ancestors[0]) ? `(${withoutParentheses})` : withoutParentheses
         }
-        case "Number Literal": {
+        case "Number": {
             const numberValue = settings["value"]
-            return numberValue === undefined ? `/* [GENERATION PROBLEM] number literal's value is undefined */` : numberValue
+            return numberValue === undefined ? `/* [GENERATION PROBLEM] number's value is undefined */` : `${numberValue}`
         }
         // Implementation of Exercise 12.1:
-        case "Parentheses": return `(${expressionFor(settings["sub"], [ value, ...ancestors ])})`
-        default: return `/* [GENERATION PROBLEM] value of concept "${value.concept}" isn't handled in expressionFor */`
+        case "Parentheses": return `(${expressionFor(settings["sub"], [ astObject, ...ancestors ])})`
+        default: return `/* [GENERATION PROBLEM] value of concept "${astObject.concept}" isn't handled in expressionFor */`
     }
 }
 module.exports.expressionFor = expressionFor    // (make public to test this function separately)
@@ -43,10 +44,20 @@ module.exports.expressionFor = expressionFor    // (make public to test this fun
 const defaultInitExpressionForType = (type) => {
     switch (type) {
         case "amount": return `0.0`
+        case "date range": return `new DateRange()`
         case "percentage": return `0`
-        case "period in days": return `{ from: Date.now(), to: Date.now() }`
         default: return `/* [GENERATION PROBLEM] type "${type}" isn't handled in defaultInitExpressionForType */`
     }
+}
+
+const initializationFor = (attribute) => {
+    const { settings } = attribute
+    const value = settings["value"]
+    return `${camelCase(settings["name"])} = ${
+        isAstObject(value)
+            ? expressionFor(value, [])
+            : defaultInitExpressionForType(settings["type"])
+    }`
 }
 
 const classField = (attribute) => {
@@ -62,30 +73,26 @@ const classField = (attribute) => {
         ]
     }
     // Handle an initial (possibly default) value:
-    return `${fieldName} = ${
-        value
-            ? expressionFor(value, [])
-            : defaultInitExpressionForType(settings["type"])
-    }`
+    return initializationFor(attribute)
 }
 
 const formFieldInput = (type, objectExpr, fieldName) => `<Input type="${type}" object={${objectExpr}} fieldName="${fieldName}" />`
 
-const formFieldInputs = (attribute, objectExpr) => {
+const formFieldInputs = (objectExpr, attribute) => {
     const { settings } = attribute
     const { type } = settings
     const fieldName = camelCase(settings["name"])
     switch (type) {
         case "amount": return "$ " + (isComputedAttribute(attribute) ? `{${objectExpr}.${fieldName}.toFixed(2)}` : formFieldInput("number", objectExpr, fieldName))
+        case "date range": return [ "from", "to" ].map((subFieldName) => formFieldInput("date", `${objectExpr}.${fieldName}`, subFieldName))
         case "percentage": return (isComputedAttribute(attribute) ? `{${objectExpr}.${fieldName}}` : formFieldInput("number", objectExpr, fieldName)) + " %"
-        case "period in days": return [ "from", "to" ].map((subFieldName) => formFieldInput("date", `${objectExpr}.${fieldName}`, subFieldName))
         default: return `// [GENERATION PROBLEM] type "${type}" isn't handled in formFieldInputs`
     }
 }
 
-const formField = (attribute, objectExpr) => [
+const formField = (objectExpr, attribute) => [
     `<FormField label="${withFirstUpper(attribute.settings["name"])}">`,
-    indent(1)(formFieldInputs(attribute, objectExpr)),
+    indent(1)(formFieldInputs(objectExpr, attribute)),
     `</FormField>`
 ]
 
@@ -99,22 +106,26 @@ const indexJsx = (recordType) => {
 import { render } from "react-dom"
 import { makeAutoObservable } from "mobx"
 import { observer } from "mobx-react"
+
 import { FormField, Input } from "./components"
+import { DateRange } from "./dates"
 
 require("./styling.css")
 
 class ${Name} {`,
-        indent(1)((dependencyOrderOf(attributes) || attributes).map(classField)),
+        indent(1)(
+            (dependencyOrderOf(attributes, referencedAttributesInValueOf) || attributes).map(classField)
+        ),
         `    constructor() {
         makeAutoObservable(this)
     }
 }
 
-const ${Name}Form = observer(({ ${name} }) => <div className="form">
-    <form>`,
-        indent(2)(attributes.map((attribute) => formField(attribute, name))),
-        `    </form>
-</div>)
+const ${Name}Form = observer(({ ${name} }) => <form>`,
+        indent(1)(
+            attributes.map((attribute) => formField(name, attribute))
+        ),
+        `</form>)
 
 const ${name} = new ${Name}()
 

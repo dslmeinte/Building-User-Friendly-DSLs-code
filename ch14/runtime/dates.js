@@ -7,20 +7,19 @@ const months = [ "January", "February", "March", "April", "May", "June", "July",
                 ]
 module.exports.months = months
 
-
-const pad = (num, len) => {
+const leftPad0 = (num, len) => {
     let str = "" + num
     if (str.length < len) {
         str = "0".repeat(len - str.length) + str
     }
     return str
 }
-const formatDate = (date) => `${pad(date.getFullYear(), 4)}-${pad(date.getMonth() + 1, 2)}-${pad(date.getDate(), 2)}`
+const formatDate = (date) => `${leftPad0(date.getFullYear(), 4)}-${leftPad0(date.getMonth() + 1, 2)}-${leftPad0(date.getDate(), 2)}`
     // date.toString().substring(0, 10)  doesn't work...
 module.exports.formatDate = formatDate
 
 
-class Period {
+class DateRange {
     // (Unfortunately, we have to deal with a syntax like this.)
     _from;
     _to;
@@ -64,5 +63,5 @@ class Period {
         return this._from.getMonth() === monthNr
     }
 }
-module.exports.Period = Period
+module.exports.DateRange = DateRange
 

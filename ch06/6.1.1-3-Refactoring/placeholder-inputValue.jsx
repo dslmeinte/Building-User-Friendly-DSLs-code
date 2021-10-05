@@ -32,7 +32,7 @@ const inputValueComponent = ({ inputType, isValid }) =>
                 })}
             />
             : <span
-                className={isMissing(editState.value) ? "value-missing" : "value"}
+                className={"value" + (isMissing(editState.value) ? " value-missing" : "")}
                 onClick={action((_) => {
                     editState.inEdit = true
                 })}

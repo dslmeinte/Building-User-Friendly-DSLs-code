@@ -1,16 +1,18 @@
 const isObject = (value) => (!!value) && (typeof value === "object") && !Array.isArray(value)
 
-const isAstObject = (value) => isObject(value) && ("concept" in value) && ("settings" in value) && ("id" in value)  // TODO  back-propagate
+const isAstObject = (value) => isObject(value) && ("concept" in value) && ("settings" in value) && ("id" in value)
 module.exports.isAstObject = isAstObject
 
+
 const isAstReferenceObject = (value) => isObject(value) && ("ref" in value)
-// TODO  back-propagate!
 
 const isAstReference = (value) => isAstReferenceObject(value) && isAstObject(value.ref)
 module.exports.isAstReference = isAstReference
 
+
 const placeholderAstObject = "<placeholder for an AST object>"
 module.exports.placeholderAstObject = placeholderAstObject
+
 
 const serialize = (value) => {
     if (isAstObject(value)) {
@@ -27,7 +29,7 @@ const serialize = (value) => {
     if (isAstReferenceObject(value)) {
         // Instead of a reference object, return an object with a 'refId === ref.id':
         return ({
-            refId: value.ref.id
+            refId: isAstObject(value.ref) ? value.ref.id : undefined
         })
     }
     if (Array.isArray(value)) {
@@ -92,7 +94,6 @@ module.exports.deserializeObservably = makeDeserialize(observable)
 
 const { nanoid } = require("nanoid")
 const newId = () => nanoid(10)  // 1% chance of at least 1 collision in ~17 years with 1000 IDs generated per hour
-module.exports.newId = newId
 
 const newAstObject = (concept, settings) => ({
     id: newId(),
@@ -101,8 +102,8 @@ const newAstObject = (concept, settings) => ({
 })
 module.exports.newAstObject = newAstObject
 
-const astReferenceTo = (referredAstObject) => ({
-    ref: referredAstObject
+const astReferenceTo = (targetAstObject) => ({
+    ref: targetAstObject
 })
 module.exports.astReferenceTo = astReferenceTo
 
@@ -111,7 +112,7 @@ module.exports.astReferenceTo = astReferenceTo
  * Manipulation functions.
  */
 
-const setSingleValue = (astObject, propertyName) => {
+const replaceSingleValue = (astObject, propertyName) => {
     const { settings } = astObject
     return (newValue) => {
         if (newValue === undefined) {
@@ -121,9 +122,9 @@ const setSingleValue = (astObject, propertyName) => {
         }
     }
 }
-module.exports.setSingleValue = setSingleValue
+module.exports.replaceSingleValue = replaceSingleValue
 
-const setInMultipleValue = (astObject, propertyName, index) => {
+const replaceInMultipleValue = (astObject, propertyName, index) => {
     const arrayValue = astObject.settings[propertyName]
     return (newValue) => {
         if (newValue === undefined) {
@@ -133,17 +134,12 @@ const setInMultipleValue = (astObject, propertyName, index) => {
         }
     }
 }
-module.exports.setInMultipleValue = setInMultipleValue
+module.exports.replaceInMultipleValue = replaceInMultipleValue
 
 
 /*
  * Convenience/queries functions.
  */
-
-const firstAncestorOfConcept = (concept, ancestors) => ancestors.find((ancestor) => ancestor.concept === concept)
-module.exports.firstAncestorOfConcept = firstAncestorOfConcept
-// TODO  show this function already in chapter 5
-
 
 /**
  * Find all instances of the specified `concept` in the tree hanging off of the given `newAstObject`.

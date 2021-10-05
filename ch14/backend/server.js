@@ -1,5 +1,3 @@
-const { join } = require("path")
-
 const { readVersionedContents, writeContents } = require("./storage")
 
 const versionedContents = readVersionedContents()
@@ -25,11 +23,12 @@ server.put("/contents", (request, response) => {
 // endpoint to generate src/runtime/index.jsx from contents:
 const { generatedIndexJsx } = require("../generator/indexJsx-template")
 const { deserialize } = require("../common/ast")
-server.get("/indexJsx", (request, response) => {
-    response.set('Content-Type', 'text/plain')
+server.get("/contents/indexJsx", (request, response) => {
+    response.set("Content-Type", "text/plain")
     response.send(generatedIndexJsx(deserialize(contents)))
 })
 
+const { join } = require("path")
 server.use(express.static(join(__dirname, "../dist")))
 
 const port = 8080

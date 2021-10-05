@@ -4,11 +4,14 @@ const { readVersionedContents, writeVersionedContents } = require("../backend/st
 
 const migrateDataAttribute = (value) => {
     if (isAstObject(value)) {
-        const copiedAstObject = ({
+        const copiedAstObject = {
             id: value.id,
             concept: value.concept === "Data Attribute" ? "Attribute" : value.concept,
             settings: {}
-        })
+        }
+        if (value.concept === "Data Attribute") {
+            copiedAstObject.settings["value kind"] = "initially"
+        }
         for (const propertyName in value.settings) {
             const migratedPropertyName = propertyName === "initial value" && value.concept === "Data Attribute" ? "value" : propertyName
             copiedAstObject.settings[migratedPropertyName] = migrateDataAttribute(value.settings[propertyName])

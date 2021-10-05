@@ -41,7 +41,7 @@ const inputValueComponent = ({ inputType, isValid }) =>
                 })}
             />
             : <span
-                className={isMissing(editState.value) ? "value-missing" : "value"}
+                className={"value" + (isMissing(editState.value) ? " value-missing" : "")}
                 onClick={action((_) => {
                     editState.inEdit = true
                 })}
@@ -73,9 +73,14 @@ export const DropDownValue = observer(({ editState, className, options, placehol
                     editState.inEdit = false
                 }
             })}
-        >{options.map((option, index) => <option key={index}>{option}</option>)}</select>
+            className={className}
+        >
+            {options.map((option, index) =>
+                <option key={index}>{option}</option>
+            )}
+        </select>
         : <span
-            className={isMissing(editState.value) ? "value-missing" : className}
+            className={className + (isMissing(editState.value) ? " value-missing" : "")}
             onClick={action((_) => {
                 editState.inEdit = true
             })}

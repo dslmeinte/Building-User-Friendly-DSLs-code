@@ -45,7 +45,7 @@ attributeRefSetting.ref
 //   settings: {
 //     name: 'rental price before discount',
 //     type: 'amount',
-//     'initial value': { concept: 'Number Literal', settings: [Object] }
+//     'initial value': { concept: 'Number', settings: [Object] }
 //   }
 // }
 
@@ -55,7 +55,7 @@ attributeRefSetting.ref === rental.settings["attributes"][1]
 rental.settings["attributes"][2].settings["initial value"].settings["value"] = 10
 // 10
 rental.settings["attributes"][2].settings["initial value"]
-// { concept: 'Number Literal', settings: { value: 10 } }
+// { concept: 'Number', settings: { value: 10 } }
 
 
 // § 3.2.2. Recognizing AST objects and references.
@@ -121,7 +121,7 @@ isAstObject(rental.settings["attributes"][0])
 isAstObject(attributeRefSetting)
 // false
 
-const isAstReference = require("./listing3.5")
+const isAstReference = require("./listings3.5-6")
 
 isAstReference(attributeRefSetting)
 // true

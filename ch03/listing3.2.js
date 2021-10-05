@@ -4,12 +4,12 @@ const rentalPeriodAttribute = {
     concept: "Data Attribute",
     settings: {
         "name": "rental period",
-        "type": "period in days"
+        "type": "date range"
     }
 }
 
 const rentalPriceBeforeDiscountInitialValue = {
-    concept: "Number Literal",
+    concept: "Number",
     settings: {
         "value": "0.0"
     }
@@ -24,7 +24,7 @@ const rentalPriceBeforeDiscountAttribute = {
 }
 
 const discountInitialValue = {
-    concept: "Number Literal",
+    concept: "Number",
     settings: {
         "value": "0"
     }
@@ -70,6 +70,6 @@ const rental = {
 }
 
 
-// Added at the start of §3.2, to be able to import the encoded AST elsewhere:
+// Added at the start of § 3.2, to be able to import the encoded AST elsewhere:
 module.exports = rental
 

@@ -2,12 +2,14 @@ import React from "react"
 import { action } from "mobx"
 import { observer } from "mobx-react"
 
+import { asClassNameArgument } from "./css-util"
+
 
 const isMissing = (value) => value === null || value === undefined
 
 const DisplayValue = ({ editState, className, placeholderText }) =>
     <span
-        className={isMissing(editState.value) ? "value-missing" : className}
+        className={asClassNameArgument(className, isMissing(editState.value) && "value-missing")}
         onClick={action((_) => {
             editState.inEdit = true
         })}
@@ -75,7 +77,12 @@ export const DropDownValue = observer(({ editState, className, options, placehol
                     editState.inEdit = false
                 }
             })}
-        >{options.map((option, index) => <option key={index}>{option}</option>)}</select>
+            className={className}
+        >
+            {options.map((option, index) =>
+                <option key={index}>{option}</option>
+            )}
+        </select>
         : <DisplayValue editState={editState} className={className} placeholderText={placeholderText} />
 )
 

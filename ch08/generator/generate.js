@@ -1,10 +1,9 @@
-const { readFile, writeFileSync } = require("fs")
 const { join } = require("path")
-const { deserialize } = require("../ast")
 
-const options = { encoding: "utf8" }
+const { deserialize } = require("../common/ast")
+const { writeString } = require("../common/file-utils")
+const { readContents } = require("../backend/storage")
 
-const astPath = join(__dirname, "../backend/data/contents.json")
 const indexJsxPath = join(__dirname, "../runtime/index.jsx")
 
 /*
@@ -21,9 +20,7 @@ const templateFile = "./" + (templateCliArgument ? templateCliArgument.substring
 
 const { generatedIndexJsx } = require(templateFile)
 
-readFile(astPath, options, (_, data) => {
-    const serializedAst = JSON.parse(data)
-    const deserializedAst = deserialize(serializedAst)
-    writeFileSync(indexJsxPath, generatedIndexJsx(deserializedAst), options)
-})
+const serializedAst = readContents()
+const deserializedAst = deserialize(serializedAst)
+writeString(indexJsxPath, generatedIndexJsx(deserializedAst))
 

@@ -4,12 +4,12 @@ import { makeAutoObservable } from "mobx"
 import { observer } from "mobx-react"
 
 import { FormField, Input } from "./components"
-import { Period } from "./dates"
+import { DateRange } from "./dates"
 
 require("./styling.css")
 
 class Rental {
-    rentalPeriod = new Period()
+    rentalPeriod = new DateRange()
     rentalPriceBeforeDiscount = 0.0
     get discount() {
         return this.rulesEffects.discount

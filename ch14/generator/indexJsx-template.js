@@ -1,7 +1,7 @@
 const { isAstObject, isAstReference } = require("../common/ast")
+const { dependencyOrderOf } = require("../common/dependency-utils")
 const { requiresParentheses } = require("../language/operators")
-const { attributesAffectedBy, isComputedFromExpression, referencedAttributesInValue } = require("../language/queries")
-const { dependencyOrderOf } = require("./dependency-utils")
+const { attributesAffectedBy, isComputedFromExpression, referencedAttributesInValueOf } = require("../language/queries")
 const { asString, camelCase, indent, withFirstUpper } = require("./template-utils")
 
 
@@ -13,39 +13,39 @@ const jsOperatorFor = (operator) => {
     }
 }
 
-const intervalOperator2methodName = {
+const dateRangeOperator2methodName = {
     "contains a": "containsWeekDay",
     "starts in": "startsInMonth"
 }
 
 const jsNameFor = (attribute) => camelCase(attribute.settings["name"])
 
-const expressionFor = (value, ancestors) => {
-    if (!isAstObject(value)) {
-        return `/* [GENERATION PROBLEM] value "${value}" isn't handled in expressionFor */`
+const expressionFor = (astObject, ancestors) => {
+    if (!isAstObject(astObject)) {
+        return `/* [GENERATION PROBLEM] value "${astObject}" isn't handled in expressionFor */`
     }
-    const { settings } = value
-    switch (value.concept) {
+    const { settings } = astObject
+    switch (astObject.concept) {
         case "Attribute Reference": {
             const targetAttribute = isAstReference(settings["attribute"]) && settings["attribute"].ref
             return targetAttribute ? `this.${jsNameFor(targetAttribute)}` : `/* [GENERATION PROBLEM] attribute reference is undefined */`
         }
         case "Binary Operation": {
             const { operator } = settings
-            const nextAncestors = [ value, ...ancestors ]
+            const nextAncestors = [ astObject, ...ancestors ]
             const withoutParentheses = `${expressionFor(settings["left operand"], nextAncestors)} ${jsOperatorFor(operator)} ${expressionFor(settings["right operand"], nextAncestors)}`
-            return requiresParentheses(value, ancestors[0]) ? `(${withoutParentheses})` : withoutParentheses
+            return requiresParentheses(astObject, ancestors[0]) ? `(${withoutParentheses})` : withoutParentheses
         }
-        case "Interval Operation": {
+        case "Date Range Operation": {
             const { operand, operator, "time unit": timeUnit } = settings
-            return `${expressionFor(operand)}.${intervalOperator2methodName[operator]}("${timeUnit}")`
+            return `${expressionFor(operand)}.${dateRangeOperator2methodName[operator]}("${timeUnit}")`
         }
         case "Number": {
             const numberValue = settings["value"]
-            return numberValue === undefined ? `/* [GENERATION PROBLEM] number's value is undefined */` : numberValue
+            return numberValue === undefined ? `/* [GENERATION PROBLEM] number's value is undefined */` : `${numberValue}`
         }
-        case "Parentheses": return `(${expressionFor(settings["sub"], [ value, ...ancestors ])})`
-        default: return `/* [GENERATION PROBLEM] value of concept "${value.concept}" isn't handled in expressionFor */`
+        case "Parentheses": return `(${expressionFor(settings["sub"], [ astObject, ...ancestors ])})`
+        default: return `/* [GENERATION PROBLEM] value of concept "${astObject.concept}" isn't handled in expressionFor */`
     }
 }
 module.exports.expressionFor = expressionFor    // (make public to test this function separately)
@@ -53,13 +53,13 @@ module.exports.expressionFor = expressionFor    // (make public to test this fun
 const defaultInitExpressionForType = (type) => {
     switch (type) {
         case "amount": return `0.0`
+        case "date range": return `new DateRange()`
         case "percentage": return `0`
-        case "period in days": return `new Period()`
         default: return `/* [GENERATION PROBLEM] type "${type}" isn't handled in defaultInitExpressionForType */`
     }
 }
 
-const initializationFor = (attribute) => {  // TODO  back-propagate that we make this into a separate function already in chapter 8
+const initializationFor = (attribute) => {
     const { settings } = attribute
     const value = settings["value"]
     return `${(jsNameFor(attribute))} = ${
@@ -119,8 +119,8 @@ const formFieldInputs = (objectExpr, attribute, isAffected) => {
     const isComputed = isAffected || isComputedFromExpression(attribute)
     switch (type) {
         case "amount": return "$ " + (isComputed ? `{${objectExpr}.${fieldName}.toFixed(2)}` : formFieldInput("number", objectExpr, fieldName))
+        case "date range": return [ "from", "to" ].map((subFieldName) => formFieldInput("date", `${objectExpr}.${fieldName}`, subFieldName))
         case "percentage": return (isComputed ? `{${objectExpr}.${fieldName}}` : formFieldInput("number", objectExpr, fieldName)) + " %"
-        case "period in days": return [ "from", "to" ].map((subFieldName) => formFieldInput("date", `${objectExpr}.${fieldName}`, subFieldName))
         default: return `// [GENERATION PROBLEM] type "${type}" isn't handled in formFieldInputs`
     }
 }
@@ -137,7 +137,7 @@ const indexJsx = (recordType) => {
     const { attributes, "business rules": businessRules } = recordType.settings
     const affectedAttributes = attributesAffectedBy(businessRules)
     const isAffected = (attribute) => affectedAttributes.indexOf(attribute) > -1
-    // Exercise 14:10 (commented-out again):
+    // Exercise 14.12 (commented-out again):
     // console.dir(affectedAttributes)
     // console.log(isAffected(attributes[2]))  // == "discount" attribute
 
@@ -148,13 +148,13 @@ import { makeAutoObservable } from "mobx"
 import { observer } from "mobx-react"
 
 import { FormField, Input } from "./components"
-import { Period } from "./dates"
+import { DateRange } from "./dates"
 
 require("./styling.css")
 
 class ${Name} {`,
         indent(1)(
-            (dependencyOrderOf(attributes, referencedAttributesInValue) || attributes)
+            (dependencyOrderOf(attributes, referencedAttributesInValueOf) || attributes)
                 .map((attribute) => classField(attribute, isAffected(attribute)))
         ),
         `    get rulesEffects() {`,
@@ -171,7 +171,9 @@ class ${Name} {`,
 
 const ${Name}Form = observer(({ ${name} }) => <form>`,
         indent(1)(
-            attributes.map((attribute) => formField(name, attribute, isAffected(attribute)))
+            attributes.map(
+                (attribute) => formField(name, attribute, isAffected(attribute))
+            )
         ),
         `</form>)
 

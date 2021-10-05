@@ -3,6 +3,25 @@ body {
     font-size: 24pt;
 }
 
+form {
+    display: grid;
+    grid-gap: 0.5em;
+}
+
+div.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+label:after {
+    content: ":";
+    grid-column: 1 / 2;
+}
+
+div.field {
+    margin-left: 0.5rem;
+    grid-column: 2 / 3;
+}
 
 input {
     font-size: 18pt;
@@ -10,21 +29,7 @@ input {
     background-color: lightyellow;
 }
 
-
-div.row {
-    margin-bottom: 0.3rem;
-}
-
-div.label {
-    display: inline-block;
-}
-
-div.label:after {
-    content: ":";
-}
-
-div.field {
-    display: inline-block;
-    margin-left: 0.5rem;
+input[type="date"] {
+    margin-right: 0.3em;
 }
 

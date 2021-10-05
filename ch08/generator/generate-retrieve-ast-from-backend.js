@@ -1,18 +1,16 @@
-const { writeFileSync } = require("fs")
 const http = require("http")
 const { join } = require("path")
 
-const { deserialize } = require("../ast")
+const { deserialize } = require("../common/ast")
+const { writeString } = require("../common/file-utils")
 const { generatedIndexJsx } = require("./generator")
-
-const options = { encoding: "utf8" }
 
 const indexJsxPath = join(__dirname, "../runtime/index.jsx")
 
 http.request({
     hostname: "localhost",
     port: 8080,
-    path: "/ast",
+    path: "/contents",
     method: "GET"
 }, (response) => {
     let serializedAst = ""
@@ -21,7 +19,7 @@ http.request({
     })
     response.on("end", () => {
         const ast = deserialize(JSON.parse(serializedAst))
-        writeFileSync(indexJsxPath, generatedIndexJsx(ast), options)
+        writeString(indexJsxPath, generatedIndexJsx(ast))
     })
 }).end()
 

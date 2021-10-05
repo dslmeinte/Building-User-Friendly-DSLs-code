@@ -1,3 +1,4 @@
+const { isAstObject } = require("../common/ast")
 const { asString, camelCase, indent, withFirstUpper } = require("./template-utils")
 
 const expressionFor = (value) => {
@@ -7,23 +8,23 @@ const expressionFor = (value) => {
             const targetAttribute = settings["attribute"].ref
             return `this.${camelCase(targetAttribute.settings["name"])}`
         }
-        case "Number Literal": return `${settings["value"]}`
+        case "Number": return `${settings["value"]}`
         default: return `/* [GENERATION PROBLEM] value of concept "${value.concept}" isn't handled in expressionFor */`
     }
 }
 
 const defaultInitExpressionForType = (type) => {
     switch (type) {
-        case "period in days": return `{ from: Date.now(), to: Date.now() }`
+        case "date range": return `new DateRange()`
         default: return `/* [GENERATION PROBLEM] type "${type}" isn't handled in defaultInitExpressionForType */`
     }
 }
 
-const classField = (attribute) => {
+const initializationFor = (attribute) => {
     const { settings } = attribute
     const initialValue = settings["initial value"]
     return `${camelCase(settings["name"])} = ${
-        initialValue
+        isAstObject(initialValue)
             ? expressionFor(initialValue)
             : defaultInitExpressionForType(settings["type"])
     }`
@@ -39,34 +40,34 @@ const indexJsx = (recordType) => {
 import { render } from "react-dom"
 import { makeAutoObservable } from "mobx"
 import { observer } from "mobx-react"
+
 import { FormField, Input } from "./components"
+import { DateRange } from "./dates"
 
 require("./styling.css")
 
 class ${Name} {`,
-        indent(1)(attributes.map(classField)),
+        indent(1)(attributes.map(initializationFor)),
         `    constructor() {
         makeAutoObservable(this)
     }
 }
 
-const RentalForm = observer(({ rental }) => <div className="form">
-    <form>
-        <FormField label="Rental period">
-            <Input type="date" object={rental.rentalPeriod} fieldName="from" />
-            <Input type="date" object={rental.rentalPeriod} fieldName="to" />
-        </FormField>
-        <FormField label="Rental price before discount">
-            $ <Input type="number" object={rental} fieldName="rentalPriceBeforeDiscount" />
-        </FormField>
-        <FormField label="Discount">
-            <Input type="number" object={rental} fieldName="discount" /> %
-        </FormField>
-        <FormField label="Rental price after discount">
-            $ <Input type="number" object={rental} fieldName="rentalPriceAfterDiscount" />
-        </FormField>
-    </form>
-</div>)
+const RentalForm = observer(({ rental }) => <form>
+    <FormField label="Rental period">
+        <Input type="date" object={rental.rentalPeriod} fieldName="from" />
+        <Input type="date" object={rental.rentalPeriod} fieldName="to" />
+    </FormField>
+    <FormField label="Rental price before discount">
+        $ <Input type="number" object={rental} fieldName="rentalPriceBeforeDiscount" />
+    </FormField>
+    <FormField label="Discount">
+        <Input type="number" object={rental} fieldName="discount" /> %
+    </FormField>
+    <FormField label="Rental price after discount">
+        $ <Input type="number" object={rental} fieldName="rentalPriceAfterDiscount" />
+    </FormField>
+</form>)
 
 const rental = new Rental()
 

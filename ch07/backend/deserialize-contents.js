@@ -1,14 +1,7 @@
-const { readFile } = require("fs")
-const { join } = require("path")
-const { deserialize } = require("../ast")
+const { readContents } = require("./storage")
+const { deserialize } = require("../common/ast")
 
-const options = { encoding: "utf8" }
-
-const contentsPath = join(__dirname, "data/contents.json")
-
-readFile(contentsPath, options, (_, data) => {
-    const serializedAst = JSON.parse(data)
-    const deserializedAst = deserialize(serializedAst)
-    require("../../ch03/print-pretty")(deserializedAst)
-})
+const serializedAst = readContents()
+const deserializedAst = deserialize(serializedAst)
+require("../../ch03/print-pretty")(deserializedAst)
 

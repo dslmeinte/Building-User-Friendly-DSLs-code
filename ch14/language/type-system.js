@@ -27,8 +27,8 @@ module.exports.untype = untype
  */
 const builtInTypes = {
     "amount": numberType("amount", "$"),
+    "date range": typeObject("date range", "Interval Type", { unit: "day" }),
     "percentage": numberType("percentage", "%"),
-    "period in days": typeObject("period in days", "Interval Type", { unit: "day" }),
     "boolean": typeObject("boolean", "Boolean Type"),
     [untypeName]: untype
 }
@@ -91,7 +91,7 @@ const typeOf = (astObject, ancestors) => {
             const rightType = typeOf(settings["right operand"] , nextAncestors)
             return typeOfBinaryOperation(settings["operator"], leftType, rightType)
         }
-        case "Interval Operation": return builtInTypes["boolean"]
+        case "Date Range Operation": return builtInTypes["boolean"]
         case "Number": {
             if (ancestors.length === 0) {
                 return untype
@@ -123,7 +123,7 @@ const typeAsText = (typeObject) => {
         case "Boolean Type": return "boolean"
         case "Interval Type": {
             switch (settings["unit"]) {
-                case "day": return "period in days"
+                case "day": return "date range"
                 default: return `Interval Type(unit='${settings["unit"]}')`
             }
         }

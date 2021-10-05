@@ -3,12 +3,6 @@ body {
     font-size: 24pt;
 }
 
-input {
-    font-size: 18pt;
-    border: 3px solid yellow;
-    background-color: lightyellow;
-}
-
 form {
     display: grid;
     grid-gap: 0.5em;
@@ -27,6 +21,12 @@ label:after {
 div.field {
     margin-left: 0.5rem;
     grid-column: 2 / 3;
+}
+
+input {
+    font-size: 18pt;
+    border: 3px solid yellow;
+    background-color: lightyellow;
 }
 
 input[type="date"] {

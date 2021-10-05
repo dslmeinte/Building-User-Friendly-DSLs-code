@@ -1,42 +1,35 @@
-const { join } = require("path")
+const { readVersionedContents, writeContents } = require("./storage")
 
-const { readJson, writeJson } = require("../file-utils")
-const { dslVersion } = require("./metaData")
-
-const contentsPath = join(__dirname, "data/contents.json")
-
-let contents = readJson(contentsPath)
+const versionedContents = readVersionedContents()
+const dslVersion = versionedContents.version    // (This implies: no AST migrations while the server is running.)
+let contents = versionedContents.contents
 
 const express = require("express")
 const server = express()
 
-server.get("/ast", (request, response) => {
-    // for Exercise 10.4:
-    response.header("X-DSL-Version", dslVersion())
+server.get("/contents", (request, response) => {
+    response.header("X-DSL-Version", dslVersion)
     response.json(contents)
 })
 
 server.use(express.json({ limit: "1gb" }))
-server.put("/ast", (request, response) => {
+server.put("/contents", (request, response) => {
     const newContents = request.body
-    writeJson(contentsPath, newContents)
+    writeContents(newContents)
     contents = newContents
     response.send()
 })
 
 // endpoint to generate src/runtime/index.jsx from contents:
 const { generatedIndexJsx } = require("../generator/indexJsx-template")
-const { deserialize } = require("../ast")
-server.get("/ast/indexJsx", (request, response) => {
-    response.set('Content-Type', 'text/plain')
+const { deserialize } = require("../common/ast")
+server.get("/contents/indexJsx", (request, response) => {
+    response.set("Content-Type", "text/plain")
     response.send(generatedIndexJsx(deserialize(contents)))
 })
 
-// needs to be after /ast routes:
-const Parcel = require("parcel-bundler")
-const bundler = new Parcel(join(__dirname, "../frontend/index.html"))
-server.use(bundler.middleware())
-// TODO  switch between development and production
+const { join } = require("path")
+server.use(express.static(join(__dirname, "../dist")))
 
 const port = 8080
 server.listen(port, () => {

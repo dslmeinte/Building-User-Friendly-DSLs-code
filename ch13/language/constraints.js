@@ -1,7 +1,7 @@
 const { isAstObject, isAstReference, placeholderAstObject } = require("../common/ast")
-const { cycleWith } = require("../generator/dependency-utils")
+const { cycleWith } = require("../common/dependency-utils")
+const { quotedNamesOf, referencedAttributesInValueOf } = require("./queries")
 const { camelCase } = require("../generator/template-utils")
-const { quotedNamesOf, referencedAttributesInValue } = require("./queries")
 const { areEqual, builtInTypes, isNumberType, typeAsText, typeOf } = require("./type-system")
 
 
@@ -10,6 +10,12 @@ const isNonEmptyString = (value) => typeof value === "string" && value.trim().le
 const issuesFor = (astObject, ancestors) => {
     const issues = []
     const { settings } = astObject
+
+    const issueIfEmpty = (propertyName, message) => {
+        if (!isNonEmptyString(settings["name"])) {
+            issues.push(message)
+        }
+    }
     const issueIfUndefined = (propertyName, message) => {
         if (settings[propertyName] === undefined) {
             issues.push(message)
@@ -21,14 +27,10 @@ const issuesFor = (astObject, ancestors) => {
             issues.push(message)
         }
     }
-    const issueIfEmpty = (propertyName, message) => {
-        if (!isNonEmptyString(settings["name"])) {
-            issues.push(message)
-        }
-    }
 
     // (Cases are in alphabetical order of concept labels:)
     switch (astObject.concept) {
+
         case "Attribute": {
             issueIfEmpty("name", "An attribute must have a name")
             issueIfUndefined("type", "An attribute must have a type")
@@ -43,7 +45,7 @@ const issuesFor = (astObject, ancestors) => {
                         + `\n\tbut they are: '${typeAsText(typeOfAttribute)}', resp., '${typeAsText(typeOfValue)}'`)
                 }
             }
-            const cycle = cycleWith(astObject, referencedAttributesInValue)
+            const cycle = cycleWith(astObject, referencedAttributesInValueOf)
             if (cycle.length > 0) {
                 issues.push("This attribute is part of a cycle through attribute references in attributes' values:\n\t"
                     + quotedNamesOf(cycle).join(" -> ") + " -> [go back to first]..."
@@ -60,12 +62,14 @@ const issuesFor = (astObject, ancestors) => {
             }
             break
         }
+
         case "Attribute Reference": {
             if (!isAstReference(settings["attribute"])) {
                 issues.push("The attribute to reference is not yet specified")
             }
             break
         }
+
         case "Binary Operation": {
             issueIfNotAstObject("left operand", "The left operand must be defined")
             issueIfUndefined("operator", "The operator must be defined")
@@ -73,18 +77,22 @@ const issuesFor = (astObject, ancestors) => {
             issues.push(...typeIssuesForBinaryOperator(astObject, ancestors))
             break
         }
+
         case "Number": {
             issueIfUndefined("value", "The number's value must be defined")
             break
         }
+
         case "Parentheses": {
             issueIfNotAstObject("sub", "The sub expression must be defined")
             break
         }
+
         case "Record Type": {
             issueIfEmpty("name", "A record type must have a name")
             break
         }
+
         // No default-case: some concepts might genuinely have no constraints defined on them.
     }
     return issues

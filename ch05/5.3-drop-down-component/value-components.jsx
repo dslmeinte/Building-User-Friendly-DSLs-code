@@ -68,7 +68,12 @@ export const DropDownValue = observer(({ editState, className, options }) =>
                     editState.inEdit = false
                 }
             })}
-        >{options.map((option, index) => <option key={index}>{option}</option>)}</select>
+            className={className}
+        >
+            {options.map((option, index) =>
+                <option key={index}>{option}</option>
+            )}
+        </select>
         : <span className={className}
             onClick={action((_) => {
                 editState.inEdit = true
