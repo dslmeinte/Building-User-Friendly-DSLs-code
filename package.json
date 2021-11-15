@@ -1,13 +1,12 @@
 {
   "name": "DSLs-Made-Easy-code",
   "version": "0.8.0-dev",
-  "description": "Repo of all code from my book Domain-Specific Languages Made Easy, for the purposes of sharing pre-publication.",
+  "description": "All the code from the book “Domain-Specific Languages Made Easy” by Meinte Boersma for Manning Publications.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dslmeinte/DSLs-Made-Easy-code.git"
   },
   "author": "Meinte Boersma (for Manning Publications)",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/dslmeinte/DSLs-Made-Easy-code/issues"
   },
