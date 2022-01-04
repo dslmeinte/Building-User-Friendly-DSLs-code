@@ -4,7 +4,7 @@
  * The expected result of each statement line is shown directly below that as a comment line.
  */
 
-const rental = require("./listing3.2")
+const rental = require("./rental-AST")
 // undefined
 
 // § 3.2. Interacting with ASTs.
@@ -88,7 +88,7 @@ typeof undefined
 typeof null
 // 'object`
 
-const isObject = require("./listing3.3")
+const isObject = require("./listing3.4")
 
 isObject(undefined)
 // false
@@ -110,7 +110,7 @@ isObject({})
 "settings" in attributeRefSetting
 // false
 
-const isAstObject = require("./listing3.4")
+const isAstObject = require("./listing3.5")
 
 isAstObject(rental)
 // true

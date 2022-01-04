@@ -1,7 +1,7 @@
 // Listing 3.4:
 
-const isAstObject = (value) => isObject(value) && ("concept" in value) && ("settings" in value)
+const isObject = (value) => (!!value) && (typeof value === "object") && !Array.isArray(value)
 
 // Export statement to be able to import this function in 'snippets-section3.2.js':
-module.exports = isAstObject
+module.exports = isObject
 

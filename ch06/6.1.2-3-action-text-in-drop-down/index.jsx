@@ -4,7 +4,7 @@ import { observable } from "mobx"
 
 require("./styling.css")
 
-import rental from "../../ch03/listing3.2"
+import rental from "../../ch03/rental-AST"
 
 // pre-add an attribute for quick testing:
 rental.settings["attributes"].push({

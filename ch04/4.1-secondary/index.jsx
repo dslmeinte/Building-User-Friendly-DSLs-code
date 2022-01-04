@@ -3,7 +3,7 @@ import { render } from "react-dom"
 
 require("./styling.css")
 
-import rental from "../../ch03/listing3.2"
+import rental from "../../ch03/rental-AST"
 
 import { Projection } from "./projection"
 

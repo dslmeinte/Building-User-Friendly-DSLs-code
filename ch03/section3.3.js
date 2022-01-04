@@ -1,8 +1,13 @@
 const { isAstObject, isAstReference } = require("./common/ast")
 
-const sum = (numbers) => numbers.reduce((currentSum, currentNumber) => currentSum + currentNumber, 0)
 
 const numberOfLeaves = (value) => {
+
+    // Exercise 3.3:
+    console.log(`numberOfLeaves called with following value:`)
+    console.dir(value)
+    console.log()   // newline, for separation
+
     if (isAstObject(value)) {
         const sub = sum(Object.values(value.settings).map(numberOfLeaves))
         return sub === 0 ? 1 : sub
@@ -16,6 +21,13 @@ const numberOfLeaves = (value) => {
     return 0
 }
 
-const rental = require("./listing3.2")
-console.log(numberOfLeaves(rental))
+
+const sum = (numbers) =>
+    numbers.reduce((currentSum, currentNumber) => currentSum + currentNumber, 0)
+module.exports.sum = sum    // We'll reuse this function in exercises-section3.3.js.
+
+
+const rental = require("./rental-AST")
+console.log(`numberOfLeaves(“Rental“ AST)=${numberOfLeaves(rental)}`)
+console.log()
 
