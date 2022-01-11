@@ -5,6 +5,7 @@ import { observable } from "mobx"
 require("./styling.css")
 
 import rental from "../../ch03/rental-AST"
+import { placeholderAstObject } from "../common/ast"
 
 // pre-add an attribute for quick testing:
 rental.settings["attributes"].push({

@@ -39,8 +39,6 @@ export const AstObjectUiWrapper = observer(({ className, astObject, deleteAstObj
                     deleteAstObject()
                 }
             }
-        })}
-        onKeyUp={action((event) => {
             if (event.key === "Escape") {
                 deselect()
             }

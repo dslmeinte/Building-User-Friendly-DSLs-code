@@ -10,7 +10,9 @@ const operatorsPerPrecedence = [ [ "-", "+" ], [ "/", "*", "of" ], [ "^" ] ]
  * @param operator A {string} with an operator.
  * @return {number} an integer rank for the operator precedence of the `operator`.
  */
-const precedenceOfOperator = (operator) => operatorsPerPrecedence.findIndex((opGroup) => opGroup.indexOf(operator) > -1)
+const precedenceOfOperator = (operator) =>
+    operatorsPerPrecedence
+        .findIndex((opGroup) => opGroup.indexOf(operator) > -1)
 module.exports.precedenceOfOperator = precedenceOfOperator  // (exported for testing)
 
 const associativityOfOperator = (operator) => {
@@ -35,7 +37,10 @@ const requiresParentheses = (expr, parent) => {
     const precParent = precedenceOfOperator(parent.settings["operator"])
     return precParent > precExpr || (
         // Exercise 12.8:
-        precExpr === precParent && expr === parent.settings[associativityOfOperator(expr.settings["operator"]) + " operand"]
+        precExpr === precParent &&
+            expr === parent.settings[
+                associativityOfOperator(expr.settings["operator"]) + " operand"
+            ]
     )
 }
 module.exports.requiresParentheses = requiresParentheses

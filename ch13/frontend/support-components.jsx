@@ -3,7 +3,7 @@ import { action, observable } from "mobx"
 import { observer } from "mobx-react"
 
 import { asClassNameArgument } from "./css-util"
-import { typeAsText, typeOf } from "../language/type-system"
+import { typeAsText } from "../language/type-system"
 
 
 const selection = observable({ selected: undefined })
@@ -32,7 +32,7 @@ export const AstObjectUiWrapper = observer(({ className, astObject, deleteAstObj
             hoverText += "\n"
         }
         hoverText += `Concept: ${astObject.concept}\n`
-        hoverText += `Type: ${typeAsText(typeOf(astObject, ancestors))}\n`
+        hoverText += `Type: ${typeAsText(type)}\n`
     }
     const isSideTransformable = !!leftTransform || !!rightTransform
     return <div
@@ -50,8 +50,6 @@ export const AstObjectUiWrapper = observer(({ className, astObject, deleteAstObj
                     deleteAstObject()
                 }
             }
-        })}
-        onKeyUp={action((event) => {
             if (event.key === "Escape") {
                 deselect()
             }

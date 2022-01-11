@@ -24,8 +24,8 @@ span.keyword {
 span.value {
     padding-left: 0.15em;
     padding-right: 0.15em;
-    background-color: rgb(228, 228, 228);
     border-radius: 5px;
+    background-color: rgb(228, 228, 228);
 }
 
 div.section {

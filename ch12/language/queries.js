@@ -51,7 +51,6 @@ const quotedNamesOf = (astObjects) => astObjects.map(nameOf).map(quote)
 module.exports.quotedNamesOf = quotedNamesOf
 
 
-// Exercise 11.9:
 /**
  * Computes whether the given `attribute` has a "computed as" value.
  * @param attribute An AST object with concept label "Attribute".

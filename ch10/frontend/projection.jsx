@@ -127,12 +127,12 @@ export const Projection = observer(({ astObject, ancestors, replaceWith }) => {
 
             case "Number": {
                 const attribute = ancestors.find((ancestor) => ancestor.concept === "Attribute")
-                const attributeType = attribute.settings["type"]
+                const type = attribute.settings["type"]
                 return <AstObjectUiWrapper className="inline" astObject={astObject} deleteAstObject={replaceWith} issues={issues}>
-                    {attributeType === "amount" && <span className="keyword">$</span>}
+                    {type === "amount" && <span className="keyword">$</span>}
                     <NumberValue editState={editStateFor("value")} placeholderText="<number>" />
-                    {attributeType === "date range" && <span className="keyword ws-left">days</span>}
-                    {attributeType === "percentage" && <span className="keyword">%</span>}
+                    {type === "date range" && <span className="keyword ws-left">days</span>}
+                    {type === "percentage" && <span className="keyword">%</span>}
                 </AstObjectUiWrapper>
             }
 

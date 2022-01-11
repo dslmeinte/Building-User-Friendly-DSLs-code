@@ -65,7 +65,8 @@ const typeOfBinaryOperation = (operator, leftType, rightType) => {
 module.exports.typeOfBinaryOperation = typeOfBinaryOperation    // export for test only
 
 
-const typeOfAttribute = (attribute) => builtInTypes[attribute.settings["type"]]
+const typeOfAttribute = (attribute) =>
+    builtInTypes[attribute.settings["type"]] || untype
 
 
 /**

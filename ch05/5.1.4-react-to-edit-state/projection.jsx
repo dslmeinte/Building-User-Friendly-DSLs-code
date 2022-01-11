@@ -38,11 +38,11 @@ export const Projection = ({ astObject, parent }) => {
             </div>
 
             case "Number": {
-                const attributeType = parent && parent.concept === "Data Attribute" && parent.settings["type"]
+                const type = parent && parent.concept === "Data Attribute" && parent.settings["type"]
                 return <div className="inline">
-                    {attributeType === "amount" && <span className="keyword">$</span>}
+                    {type === "amount" && <span className="keyword">$</span>}
                     <span className="value">{settings["value"]}</span>
-                    {attributeType === "percentage" && <span className="keyword">%</span>}
+                    {type === "percentage" && <span className="keyword">%</span>}
                 </div>
             }
 

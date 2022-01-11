@@ -20,7 +20,7 @@ const projectionExpressionFor = (astObject, ancestors, propertyName) => {
         ? <DropDownValue
             editState={observable({
                 setValue: (newValue) => {
-                    settings[propertyName] = observable(newAstObject(newValue))
+                    settings[propertyName] = newAstObject(newValue)
                 }
             })}
             options={[

@@ -94,21 +94,21 @@ module.exports.deserialize = deserialize
 const { observable } = require("mobx")
 
 const deserializeObservably = (serializedAst) => {
-    const id2ObservableAstObject = {}
+    const id2AstObject = {}
     const referencesToResolve = []
 
-    const deserializeObservablyInternal = (value) => {
+    const deserializeInternal = (value) => {
         if (isAstObject(value)) {
-            const observableAstObject = observable({
+            const astObject = observable({
                 id: value.id,
                 concept: value.concept,
                 settings: {}
             })
             for (const propertyName in value.settings) {
-                observableAstObject.settings[propertyName] = deserializeObservablyInternal(value.settings[propertyName])
+                astObject.settings[propertyName] = deserializeInternal(value.settings[propertyName])
             }
-            id2ObservableAstObject[value.id] = observableAstObject
-            return observableAstObject
+            id2AstObject[value.id] = astObject
+            return astObject
         }
         if (isSerializedAstReference(value)) {
             const refObjectToFix = observable({})
@@ -116,15 +116,15 @@ const deserializeObservably = (serializedAst) => {
             return refObjectToFix
         }
         if (Array.isArray(value)) {
-            return value.map(deserializeObservablyInternal)
+            return observable(value.map(deserializeInternal))
         }
         return value
     }
 
-    const deserializedAst = deserializeObservablyInternal(serializedAst)
+    const deserializedAst = deserializeInternal(serializedAst)
 
     referencesToResolve.forEach(([ refId, refObjectToFix ]) => {
-        refObjectToFix.ref = id2ObservableAstObject[refId]
+        refObjectToFix.ref = id2AstObject[refId]
     })
 
     return deserializedAst

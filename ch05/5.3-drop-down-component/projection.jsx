@@ -48,12 +48,13 @@ export const Projection = observer(({ astObject, parent }) => {
             </div>
 
             case "Number": {
-                const attributeType = parent && parent.concept === "Data Attribute" && parent.settings["type"]
+                const type = parent && parent.concept === "Data Attribute" && parent.settings["type"]
                 return <div className="inline">
-                    {attributeType === "amount" && <span className="keyword">$</span>}
+                    {type === "amount" && <span className="keyword">$</span>}
                     <NumberValue editState={editStateFor("value")} />
-                    {attributeType === "date range" && <span className="keyword ws-left">days</span>}
-                    {attributeType === "percentage" && <span className="keyword">%</span>}
+                    // Exercise 5.8 (next line only):
+                    {type === "date range" && <span className="keyword ws-left">days</span>}
+                    {type === "percentage" && <span className="keyword">%</span>}
                 </div>
             }
 

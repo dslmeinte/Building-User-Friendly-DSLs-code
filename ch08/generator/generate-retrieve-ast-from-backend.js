@@ -5,7 +5,7 @@ const { deserialize } = require("../common/ast")
 const { writeString } = require("../common/file-utils")
 const { generatedIndexJsx } = require("./generator")
 
-const indexJsxPath = join(__dirname, "../runtime/index.jsx")
+const indexJsxPath = join(__dirname, "..", "runtime", "index.jsx")
 
 http.request({
     hostname: "localhost",

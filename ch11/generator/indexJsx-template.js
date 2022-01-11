@@ -55,7 +55,7 @@ const classField = (attribute) => {
     if (isComputedAttribute(attribute)) {
         return [
             `get ${fieldName}() {`,
-            `    return ${expressionFor(value, [])}`,
+            `    return ${expressionFor(value)}`,
             `}`
         ]
     }

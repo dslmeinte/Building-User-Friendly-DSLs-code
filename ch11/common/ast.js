@@ -65,7 +65,7 @@ const makeDeserialize = (modify) => (serializedAst) => {
             return refObjectToFix
         }
         if (Array.isArray(value)) {
-            return value.map(deserializeInternal)
+            return modify(value.map(deserializeInternal))
         }
         return value
     }

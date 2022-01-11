@@ -31,7 +31,7 @@ server.get("/contents/indexJsx", (request, response) => {
 })
 
 const { join } = require("path")
-server.use(express.static(join(__dirname, "../dist")))
+server.use(express.static(join(__dirname, "..", "dist")))
 
 const port = 8080
 server.listen(port, () => {

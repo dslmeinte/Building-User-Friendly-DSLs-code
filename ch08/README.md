@@ -19,9 +19,9 @@
     The hand-written code for the Runtime for the example "Rental" AST.
     Run this as follows:
 
-        $ npx parcel runtime/index.html
+        $ npx parcel runtime/index.html --out-dir dist-runtime --port 8180
 
-    This will serve the Runtime as Web app on [http://localhost:1234]().
+    This will serve the Runtime as Web app on [http://localhost:8180]().
 
 * [The generator code](./generator).
     Run the standalone code generator as follows:
@@ -47,14 +47,17 @@
 
 To run the Domain IDE:
 
-    $ node backend/serialize-Rental.js
+    $ node init/install-example-DSL-content.js
     $ node backend/server.js
 
 The Domain IDE can now be accessed on [`http://localhost:8080/`](http://localhost:8080/).
 _Note:_ the first step initializes the file `backend/data/contents.json`, without making a backup if it already exists!
 Alternatively, run:
 
+    $ ./initialize-storage.js
     $ ./run-Domain-IDE.sh
+
+This script relies on an `open` command that opens a browser on HTML files.
 
 To generate the Runtime, and run it:
 

@@ -65,7 +65,7 @@ export const Projection = observer(({ astObject, ancestors, replaceWith }) => {
                                 editState={observable({
                                     inEdit: true,
                                     setValue: (newValue) => {
-                                        settings["initial value"] = observable(newAstObject(newValue))
+                                        settings["initial value"] = newAstObject(newValue)
                                     }
                                 })}
                                 options={[
@@ -92,12 +92,12 @@ export const Projection = observer(({ astObject, ancestors, replaceWith }) => {
 
             case "Number": {
                 const attribute = ancestors.find((ancestor) => ancestor.concept === "Data Attribute")
-                const attributeType = attribute.settings["type"]
+                const type = attribute.settings["type"]
                 return <AstObjectUiWrapper className="inline" astObject={astObject} deleteAstObject={replaceWith}>
-                    {attributeType === "amount" && <span className="keyword">$</span>}
+                    {type === "amount" && <span className="keyword">$</span>}
                     <NumberValue editState={editStateFor("value")} placeholderText="<number>" />
-                    {attributeType === "date range" && <span className="keyword ws-left">days</span>}
-                    {attributeType === "percentage" && <span className="keyword">%</span>}
+                    {type === "date range" && <span className="keyword ws-left">days</span>}
+                    {type === "percentage" && <span className="keyword">%</span>}
                 </AstObjectUiWrapper>
             }
 

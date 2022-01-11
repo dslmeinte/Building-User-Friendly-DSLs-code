@@ -6,7 +6,7 @@ const { readVersionedContents } = require("../backend/storage")
 const { issuesFor } = require("../language/constraints")
 const { generatedIndexJsx } = require("./indexJsx-template")
 
-const indexJsxPath = join(__dirname, "../runtime/index.jsx")
+const indexJsxPath = join(__dirname, "..", "runtime", "index.jsx")
 
 const serializedAst = readVersionedContents().contents
 const deserializedAst = deserialize(serializedAst)

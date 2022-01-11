@@ -4,7 +4,7 @@ const { deserialize } = require("../common/ast")
 const { writeString } = require("../common/file-utils")
 const { readContents } = require("../backend/storage")
 
-const indexJsxPath = join(__dirname, "../runtime/index.jsx")
+const indexJsxPath = join(__dirname, "..", "runtime", "index.jsx")
 
 /*
  * The following implements some convenience on top of the book's code,

@@ -6,7 +6,7 @@ import { astReferenceTo, isAstObject, newAstObject, placeholderAstObject, replac
 import { AddNewButton, AstObjectUiWrapper } from "./support-components"
 import { DropDownValue, NumberValue, TextValue } from "./value-components"
 import { issuesFor } from "../language/constraints"
-import { allOperators, requiresParentheses } from "../language/operators"
+import { requiresParentheses } from "../language/operators"
 
 
 const indefiniteArticleFor = (nextWord) => "a" + ((typeof nextWord === "string" && nextWord.toLowerCase().match(/^[aeiou]/)) ? "n" : "")
@@ -19,7 +19,7 @@ const projectionExpressionFor = (astObject, ancestors, propertyName) => {
         ? <DropDownValue
             editState={observable({
                 setValue: (newValue) => {
-                    settings[propertyName] = observable(newAstObject(newValue))
+                    settings[propertyName] = newAstObject(newValue)
                 }
             })}
             options={[
@@ -128,7 +128,7 @@ export const Projection = observer(({ astObject, ancestors, replaceWith }) => {
                     <DropDownValue
                         className="value enum-like ws-both"
                         editState={editStateFor("operator")}
-                        options={[ "of", "-", "+", "/", "*" ]}
+                        options={[ "of", "-", "+", "/", "*", "^" ]}
                         placeholderText="<operator>"
                     />
                     {projectionExpressionFor(astObject, ancestors, "right operand")}
@@ -138,12 +138,12 @@ export const Projection = observer(({ astObject, ancestors, replaceWith }) => {
 
             case "Number": {
                 // Exercise 12.3:
-                const attributeType = ancestors[0].concept === "Attribute" ? ancestors[0].settings["type"] : undefined
+                const type = ancestors[0].concept === "Attribute" ? ancestors[0].settings["type"] : undefined
                 return <UiWrapped className="inline" /* Exercise 12.12: */ sideTransformable>
-                    {attributeType === "amount" && <span className="keyword">$</span>}
+                    {type === "amount" && <span className="keyword">$</span>}
                     <NumberValue editState={editStateFor("value")} placeholderText="<number>" />
-                    {attributeType === "date range" && <span className="keyword ws-left">days</span>}
-                    {attributeType === "percentage" && <span className="keyword">%</span>}
+                    {type === "date range" && <span className="keyword ws-left">days</span>}
+                    {type === "percentage" && <span className="keyword">%</span>}
                 </UiWrapped>
             }
 
