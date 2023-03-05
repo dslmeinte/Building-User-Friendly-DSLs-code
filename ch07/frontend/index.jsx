@@ -1,5 +1,5 @@
 import React from "react"
-import { render } from "react-dom"
+import { createRoot } from "react-dom/client"
 import { action, observable } from "mobx"
 import { observer } from "mobx-react"
 
@@ -8,7 +8,7 @@ require("./styling.css")
 
 import { deserializeObservably, serialize } from "../common/ast"
 
-const astContainer = observable({
+const state = observable({
     ast: null
 })
 
@@ -17,7 +17,7 @@ const apiUrl = "http://localhost:8080/contents"
 fetch(apiUrl)
     .then((response) => response.json())
     .then(action((json) => {
-        astContainer.ast = deserializeObservably(json)
+        state.ast = deserializeObservably(json)
     }))
 
 const save = (_) => {
@@ -26,7 +26,7 @@ const save = (_) => {
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(serialize(astContainer.ast))
+        body: JSON.stringify(serialize(state.ast))
     })
     // (ignore returned Promise)
 }
@@ -34,17 +34,20 @@ const save = (_) => {
 
 import { Projection } from "./projection"
 
-const App = observer(() =>
-    astContainer.ast
+const App = observer(({ state }) =>
+    state.ast
         ? <div>
             <button className="save" onClick={save}>Save</button>
-            <Projection astObject={astContainer.ast} ancestors={[]} />
+            <Projection
+                astObject={state.ast}
+                ancestors={[]}
+            />
         </div>
         : <div className="spinner"></div>
 )
 
-render(
-    <App />,
-    document.getElementById("root")
-)
+createRoot(document.getElementById("root"))
+    .render(
+        <App state={state} />
+    )
 

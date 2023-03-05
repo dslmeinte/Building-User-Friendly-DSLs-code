@@ -1,5 +1,5 @@
 import React from "react"
-import { render } from "react-dom"
+import { createRoot } from "react-dom/client"
 
 require("./styling.css")
 
@@ -7,8 +7,10 @@ import rental from "../../ch03/rental-AST"
 
 import { Projection } from "./projection"
 
-render(
-    <Projection astObject={rental} />,
-    document.getElementById("root")
-)
+createRoot(document.getElementById("root"))
+    .render(
+        <Projection
+            astObject={rental}
+        />
+    )
 

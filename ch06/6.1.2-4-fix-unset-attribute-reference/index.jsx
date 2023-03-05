@@ -1,5 +1,5 @@
 import React from "react"
-import { render } from "react-dom"
+import { createRoot } from "react-dom/client"
 import { observable } from "mobx"
 
 require("./styling.css")
@@ -22,8 +22,11 @@ rental.settings["attributes"].push({
 
 import { Projection } from "./projection"
 
-render(
-    <Projection astObject={observable(rental)} ancestors={[]} />,
-    document.getElementById("root")
-)
+createRoot(document.getElementById("root"))
+    .render(
+        <Projection
+            astObject={observable(rental)}
+            ancestors={[]}
+        />
+    )
 

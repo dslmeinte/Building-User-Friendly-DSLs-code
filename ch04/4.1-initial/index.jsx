@@ -1,11 +1,10 @@
-import React from "react" 
-import { render } from "react-dom" 
+import React from "react"
+import { createRoot } from "react-dom/client"
 
-require('./styling.css') 
+require("./styling.css")
 
-
-render( 
-    <span>Projection goes here!</span>, 
-    document.getElementById("root") 
-)
+createRoot(document.getElementById("root"))
+    .render(
+        <span>Frontend goes here!</span>
+    )
 
