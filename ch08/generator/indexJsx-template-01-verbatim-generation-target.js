@@ -1,6 +1,6 @@
 const indexJsx = (recordType) => {
     return `import React from "react"
-import { render } from "react-dom"
+import { createRoot } from "react-dom/client"
 import { makeAutoObservable } from "mobx"
 import { observer } from "mobx-react"
 
@@ -37,14 +37,10 @@ const RentalForm = observer(({ rental }) => <form>
 
 const rental = new Rental()
 
-const App = observer(() => <div>
-    <RentalForm rental={rental} />
-</div>)
-
-render(
-    <App />,
-    document.getElementById("root")
-)
+createRoot(document.getElementById("root"))
+    .render(
+        <RentalForm rental={rental} />
+    )
 `
 }
 

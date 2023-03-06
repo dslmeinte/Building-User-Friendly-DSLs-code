@@ -38,7 +38,7 @@
     The hand-written code for the Runtime for the example DSL content.
     Run this as follows:
 
-        $ npx parcel runtime/index.html --port 8180 --out-dir dist-runtime
+        $ npx parcel runtime/index.html --port 8180 --dist-dir dist-runtime
 
     This will bundle the Runtime to `dist-runtime/`, and serve it (in hot-reloading mode) as a Web app on [http://localhost:8180]().
     Running the code generator against the example DSL contents from `./init/example-AST.js` produces the exact same code.
@@ -76,7 +76,7 @@ Alternatively, run:
 To generate the Runtime, and run it:
 
     $ node generator/generator.js
-    $ npx parcel runtime/index.html --port 8180 --out-dir dist-runtime
+    $ npx parcel runtime/index.html --port 8180 --dist-dir dist-runtime
 
 The steps above achieve the following:
 

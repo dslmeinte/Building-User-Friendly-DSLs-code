@@ -10,7 +10,7 @@ const issuesFor = (astObject, ancestors) => {
     const { settings } = astObject
 
     const issueIfEmpty = (propertyName, message) => {
-        if (!isNonEmptyString(settings["name"])) {
+        if (!isNonEmptyString(settings[propertyName])) {
             issues.push(message)
         }
     }
@@ -69,6 +69,7 @@ const issuesFor = (astObject, ancestors) => {
             break
         }
 
+        // Exercise 11.10:
         case "Binary Operation": {
             issueIfNotAstObject("left operand", "The left operand must be defined")
             issueIfUndefined("operator", "The operator must be defined")

@@ -1,8 +1,11 @@
 const { isAstObject, isAstReference } = require("../common/ast")
 const { dependencyOrderOf } = require("../common/dependency-utils")
 const { requiresParentheses } = require("../language/operators")
-const { isComputedAttribute, referencedAttributesInValueOf } = require("../language/queries")
+const { isComputedFromExpression, referencedAttributesInValueOf } = require("../language/queries")
 const { asString, camelCase, indent, withFirstUpper } = require("./template-utils")
+
+
+const ccNameOf = (namedObject) => camelCase(namedObject.settings["name"])
 
 const jsOperatorFor = (operator) => {
     switch (operator) {
@@ -21,7 +24,7 @@ const expressionFor = (astObject, ancestors) => {
     switch (astObject.concept) {
         case "Attribute Reference": {
             const targetAttribute = isAstReference(settings["attribute"]) && settings["attribute"].ref
-            return targetAttribute ? `this.${camelCase(targetAttribute.settings["name"])}` : `/* [GENERATION PROBLEM] attribute reference is undefined */`
+            return targetAttribute ? `this.${ccNameOf(targetAttribute)}` : `/* [GENERATION PROBLEM] attribute reference is undefined */`
         }
         case "Binary Operation": {
             const { operator } = settings
@@ -53,7 +56,7 @@ const defaultInitExpressionForType = (type) => {
 const initializationFor = (attribute) => {
     const { settings } = attribute
     const value = settings["value"]
-    return `${camelCase(settings["name"])} = ${
+    return `${ccNameOf(attribute)} = ${
         isAstObject(value)
             ? expressionFor(value, [])
             : defaultInitExpressionForType(settings["type"])
@@ -63,9 +66,9 @@ const initializationFor = (attribute) => {
 const classField = (attribute) => {
     const { settings } = attribute
     const value = settings["value"]
-    const fieldName = camelCase(settings["name"])
+    const fieldName = ccNameOf(attribute)
     // Handle a computed value:
-    if (isComputedAttribute(attribute)) {
+    if (isComputedFromExpression(attribute)) {
         return [
             `get ${fieldName}() {`,
             `    return ${expressionFor(value, [])}`,
@@ -81,11 +84,11 @@ const formFieldInput = (type, objectExpr, fieldName) => `<Input type="${type}" o
 const formFieldInputs = (objectExpr, attribute) => {
     const { settings } = attribute
     const { type } = settings
-    const fieldName = camelCase(settings["name"])
+    const fieldName = ccNameOf(attribute)
     switch (type) {
-        case "amount": return "$ " + (isComputedAttribute(attribute) ? `{${objectExpr}.${fieldName}.toFixed(2)}` : formFieldInput("number", objectExpr, fieldName))
+        case "amount": return "$ " + (isComputedFromExpression(attribute) ? `{${objectExpr}.${fieldName}.toFixed(2)}` : formFieldInput("number", objectExpr, fieldName))
         case "date range": return [ "from", "to" ].map((subFieldName) => formFieldInput("date", `${objectExpr}.${fieldName}`, subFieldName))
-        case "percentage": return (isComputedAttribute(attribute) ? `{${objectExpr}.${fieldName}}` : formFieldInput("number", objectExpr, fieldName)) + " %"
+        case "percentage": return (isComputedFromExpression(attribute) ? `{${objectExpr}.${fieldName}}` : formFieldInput("number", objectExpr, fieldName)) + " %"
         default: return `// [GENERATION PROBLEM] type "${type}" isn't handled in formFieldInputs`
     }
 }
@@ -97,13 +100,13 @@ const formField = (objectExpr, attribute) => [
 ]
 
 const indexJsx = (recordType) => {
-    const name = camelCase(recordType.settings["name"])
-    const Name = withFirstUpper(name)
+    const name = ccNameOf(recordType)
+    const ucName = withFirstUpper(name)
     const { attributes } = recordType.settings
 
     return [
         `import React from "react"
-import { render } from "react-dom"
+import { createRoot } from "react-dom/client"
 import { makeAutoObservable } from "mobx"
 import { observer } from "mobx-react"
 
@@ -112,31 +115,30 @@ import { DateRange } from "./dates"
 
 require("./styling.css")
 
-class ${Name} {`,
+class ${ucName} {`,
         indent(1)(
-            (dependencyOrderOf(attributes, referencedAttributesInValueOf) || attributes).map(classField)
+            (dependencyOrderOf(attributes, referencedAttributesInValueOf) || attributes)
+                .map(classField)
         ),
         `    constructor() {
         makeAutoObservable(this)
     }
 }
 
-const ${Name}Form = observer(({ ${name} }) => <form>`,
+const ${ucName}Form = observer(({ ${name} }) => <form>`,
         indent(1)(
-            attributes.map((attribute) => formField(name, attribute))
+            attributes.map(
+                (attribute) => formField(name, attribute)
+            )
         ),
         `</form>)
 
-const ${name} = new ${Name}()
+const ${name} = new ${ucName}()
 
-const App = observer(() => <div>
-    <${Name}Form ${name}={${name}} />
-</div>)
-
-render(
-    <App />,
-    document.getElementById("root")
-)
+createRoot(document.getElementById("root"))
+    .render(
+        <${ucName}Form ${name}={${name}} />
+    )
 `
     ]
 }

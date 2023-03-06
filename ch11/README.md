@@ -1,7 +1,7 @@
 # Code from chapter 11
 
 
-## Code organization, per file
+## Code organization, per directory
 
 * [The frontend code](./frontend) - bundled with Parcel, and served through the backend.
 

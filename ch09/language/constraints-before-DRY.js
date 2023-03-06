@@ -9,17 +9,6 @@ const issuesFor = (astObject, ancestors) => {
     const issues = []
     const { settings } = astObject
 
-    const issueIfEmpty = (propertyName, message) => {
-        if (!isNonEmptyString(settings[propertyName])) {
-            issues.push(message)
-        }
-    }
-    const issueIfUndefined = (propertyName, message) => {
-        if (settings[propertyName] === undefined) {
-            issues.push(message)
-        }
-    }
-
     // (Cases are in alphabetical order of concept labels:)
     switch (astObject.concept) {
 
@@ -43,9 +32,13 @@ const issuesFor = (astObject, ancestors) => {
 
         case "Data Attribute": {
             // Application of the ImposeConstraints option to the situation of § 9.2:
-            issueIfEmpty("name", "An attribute must have a name")
+            if (!isNonEmptyString(settings["name"])) {
+                issues.push("An attribute must have a name")
+            }
             // Application of the ImposeConstraints option to the situation of § 9.3.1:
-            issueIfUndefined("type", "An attribute must have a type")
+            if (settings["type"] === undefined) {
+                issues.push("An attribute must have a type")
+            }
             // Application of the ImposeConstraints option to situation 3 of Exercise 9.8:
             if (settings["initial value"] === placeholderAstObject) {
                 issues.push("The initial value of this attribute is not yet defined")
@@ -72,13 +65,17 @@ const issuesFor = (astObject, ancestors) => {
 
         case "Number": {
             // Application of the ImposeConstraints option to situation 2 of Exercise 9.8:
-            issueIfUndefined("value", "The number's value must be defined")
+            if (settings["value"] === undefined) {
+                issues.push("The number's value must be defined")
+            }
             break
         }
 
         case "Record Type": {
             // Application of the ImposeConstraints option to Exercise 9.5:
-            issueIfEmpty("name", "A record type must have a name")
+            if (!isNonEmptyString(settings["name"])) {
+                issues.push("A record type must have a name")
+            }
             break
         }
 

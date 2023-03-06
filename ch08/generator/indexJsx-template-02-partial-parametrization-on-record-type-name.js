@@ -1,8 +1,8 @@
 const indexJsx = (recordType) => {
-    const Name = recordType.settings["name"]
+    const ucName = recordType.settings["name"]
 
     return `import React from "react"
-import { render } from "react-dom"
+import { createRoot } from "react-dom/client"
 import { makeAutoObservable } from "mobx"
 import { observer } from "mobx-react"
 
@@ -11,7 +11,7 @@ import { DateRange } from "./dates"
 
 require("./styling.css")
 
-class ${Name} {
+class ${ucName} {
     rentalPeriod = new DateRange()
     rentalPriceBeforeDiscount = 0.0
     discount = 0
@@ -39,14 +39,10 @@ const RentalForm = observer(({ rental }) => <form>
 
 const rental = new Rental()
 
-const App = observer(() => <div>
-    <RentalForm rental={rental} />
-</div>)
-
-render(
-    <App />,
-    document.getElementById("root")
-)
+createRoot(document.getElementById("root"))
+    .render(
+        <RentalForm rental={rental} />
+    )
 `
 }
 

@@ -1,4 +1,4 @@
-const { isAstObject, isAstReference, firstAncestorOfConcept, placeholderAstObject } = require("../common/ast")
+const { isAstObject, isAstReference, placeholderAstObject } = require("../common/ast")
 const { cycleWith } = require("../common/dependency-utils")
 const { attributesAffectedBy, quotedNamesOf, referencedAttributesIn, referencedAttributesInValueOf } = require("./queries")
 const { camelCase } = require("../generator/template-utils")
@@ -13,7 +13,7 @@ const issuesFor = (astObject, ancestors) => {
     const { settings } = astObject
 
     const issueIfEmpty = (propertyName, message) => {
-        if (!isNonEmptyString(settings["name"])) {
+        if (!isNonEmptyString(settings[propertyName])) {
             issues.push(message)
         }
     }
@@ -86,8 +86,8 @@ const issuesFor = (astObject, ancestors) => {
                 if (!areEqual(typeOfCondition, builtInTypes["boolean"])) {
                     issues.push(`The condition of a business rule must produce a boolean value, but its type is '${typeAsText(typeOfCondition)}'`)
                 }
-                // Exercise 14.8:
-                const affectedAttributes = attributesAffectedBy(firstAncestorOfConcept("Record Type", ancestors).settings["business rules"])
+                // Exercise 14.7:
+                const affectedAttributes = attributesAffectedBy(ancestors.find((ancestor) => ancestor.concept === "Record Type").settings["business rules"])
                 const inCommon = referencedAttributesIn(settings["condition"]).filter((attribute) => affectedAttributes.indexOf(attribute) > -1)
                 if (inCommon.length > 0) {
                     issues.push(`The condition of a business rule must not depend on an attribute affected by any business rule,`

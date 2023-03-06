@@ -1,15 +1,18 @@
 const { isAstObject } = require("../common/ast")
 const { asString, camelCase, indent, withFirstUpper } = require("./template-utils")
 
-const expressionFor = (value) => {
-    const { settings } = value
-    switch (value.concept) {
+
+const ccNameOf = (namedObject) => camelCase(namedObject.settings["name"])
+
+const expressionFor = (astObject) => {
+    const { settings } = astObject
+    switch (astObject.concept) {
         case "Attribute Reference": {
             const targetAttribute = settings["attribute"].ref
-            return `this.${camelCase(targetAttribute.settings["name"])}`
+            return `this.${ccNameOf(targetAttribute)}`
         }
         case "Number": return `${settings["value"]}`
-        default: return `/* [GENERATION PROBLEM] value of concept "${value.concept}" isn't handled in expressionFor */`
+        default: return `/* [GENERATION PROBLEM] value of concept "${astObject.concept}" isn't handled in expressionFor */`
     }
 }
 
@@ -23,7 +26,7 @@ const defaultInitExpressionForType = (type) => {
 const initializationFor = (attribute) => {
     const { settings } = attribute
     const initialValue = settings["initial value"]
-    return `${camelCase(settings["name"])} = ${
+    return `${ccNameOf(attribute)} = ${
         isAstObject(initialValue)
             ? expressionFor(initialValue)
             : defaultInitExpressionForType(settings["type"])
@@ -31,13 +34,13 @@ const initializationFor = (attribute) => {
 }
 
 const indexJsx = (recordType) => {
-    const name = camelCase(recordType.settings["name"])
-    const Name = withFirstUpper(name)
+    const name = ccNameOf(recordType)
+    const ucName = withFirstUpper(name)
     const { attributes } = recordType.settings
 
     return [
         `import React from "react"
-import { render } from "react-dom"
+import { createRoot } from "react-dom/client"
 import { makeAutoObservable } from "mobx"
 import { observer } from "mobx-react"
 
@@ -46,8 +49,10 @@ import { DateRange } from "./dates"
 
 require("./styling.css")
 
-class ${Name} {`,
-        indent(1)(attributes.map(initializationFor)),
+class ${ucName} {`,
+        indent(1)(
+            attributes.map(initializationFor)
+        ),
         `    constructor() {
         makeAutoObservable(this)
     }
@@ -71,14 +76,10 @@ const RentalForm = observer(({ rental }) => <form>
 
 const rental = new Rental()
 
-const App = observer(() => <div>
-    <RentalForm rental={rental} />
-</div>)
-
-render(
-    <App />,
-    document.getElementById("root")
-)
+createRoot(document.getElementById("root"))
+    .render(
+        <RentalForm rental={rental} />
+    )
 `
     ]
 }

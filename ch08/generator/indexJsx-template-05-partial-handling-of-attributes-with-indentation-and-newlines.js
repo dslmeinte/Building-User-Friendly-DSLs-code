@@ -1,5 +1,8 @@
 const { camelCase, withFirstUpper } = require("./template-utils")
 
+
+const ccNameOf = (namedObject) => camelCase(namedObject.settings["name"])
+
 const defaultInitExpressionForType = (type) => {
     switch (type) {
         case "date range": return `new DateRange()`
@@ -10,7 +13,7 @@ const defaultInitExpressionForType = (type) => {
 const initializationFor = (attribute) => {
     const { settings } = attribute
     const initialValue = settings["initial value"]
-    return `${camelCase(settings["name"])} = ${
+    return `${ccNameOf(attribute)} = ${
         initialValue
             ? `/* [GENERATION PROBLEM] initial value not handled */`
             : defaultInitExpressionForType(settings["type"])
@@ -18,12 +21,11 @@ const initializationFor = (attribute) => {
 }
 
 const indexJsx = (recordType) => {
-    const name = camelCase(recordType.settings["name"])
-    const Name = withFirstUpper(name)
-    const { attributes } = recordType.settings
+    const name = ccNameOf(recordType)
+    const ucName = withFirstUpper(name)
 
     return `import React from "react"
-import { render } from "react-dom"
+import { createRoot } from "react-dom/client"
 import { makeAutoObservable } from "mobx"
 import { observer } from "mobx-react"
 
@@ -32,8 +34,8 @@ import { DateRange } from "./dates"
 
 require("./styling.css")
 
-class ${Name} {
-${attributes.map((attribute) => `    ${initializationFor(attribute)}`).join("\n")}
+class ${ucName} {
+${recordType.settings["attributes"].map((attribute) => `    ${initializationFor(attribute)}`).join("\n")}
     constructor() {
         makeAutoObservable(this)
     }
@@ -57,14 +59,10 @@ const RentalForm = observer(({ rental }) => <form>
 
 const rental = new Rental()
 
-const App = observer(() => <div>
-    <RentalForm rental={rental} />
-</div>)
-
-render(
-    <App />,
-    document.getElementById("root")
-)
+createRoot(document.getElementById("root"))
+    .render(
+        <RentalForm rental={rental} />
+    )
 `
 }
 

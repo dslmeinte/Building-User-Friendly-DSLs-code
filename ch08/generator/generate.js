@@ -4,8 +4,6 @@ const { deserialize } = require("../common/ast")
 const { writeString } = require("../common/file-utils")
 const { readContents } = require("../backend/storage")
 
-const indexJsxPath = join(__dirname, "..", "runtime", "index.jsx")
-
 /*
  * The following implements some convenience on top of the book's code,
  * so we can run intermediate versions of the final template code in indexJsx-template.js
@@ -19,6 +17,8 @@ const templateCliArgument = process.argv[2]
 const templateFile = "./" + (templateCliArgument ? templateCliArgument.substring(0, templateCliArgument.lastIndexOf(".js")) : "indexJsx-template")
 
 const { generatedIndexJsx } = require(templateFile)
+
+const indexJsxPath = join(__dirname, "..", "runtime", "index.jsx")
 
 const serializedAst = readContents()
 const deserializedAst = deserialize(serializedAst)

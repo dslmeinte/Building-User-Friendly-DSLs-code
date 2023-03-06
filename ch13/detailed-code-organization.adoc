@@ -18,8 +18,11 @@
 | &emsp; &emsp; `contents.backup-<version>.json`
 | Backup of serialized ASTs before migrating from version `<version>`
 
-| &emsp; &emsp; `contents.backup-<version>.json`
+| &emsp; &emsp; `contents.json`
 | The serialized AST served and manipulated by the frontend
+
+| &emsp; &emsp; `metaData.json`
+| The metadata associated with the serialized AST: the DSL's version
 
 | &emsp; server.js
 | Implements the backend using https://expressjs.com/[Express]
@@ -34,12 +37,18 @@
 | &emsp; `ast.js`
 | Is responsible for dealing with ASTs, and its low-level structure
 
+| &emsp; `dependency-utils.js`
+| Implements functions for dealing with (potentially cyclic) dependencies
+
 | &emsp; `file-utils.js`
 | Reads/writes JSON from/to files
 
 
 | `frontend/`
 | Implements the frontend using https://reactjs.org/[React] and https://mobx.js.org/[MobX]
+
+| &emsp; `css-util.js`
+| Contains CSS-related utility/convenience functions
 
 | &emsp; `index.html`
 | The frontend's entrypoint that "`kicks off`" `index.jsx`
@@ -62,9 +71,6 @@
 
 | `generator/`
 | Implements the generator
-
-| &emsp; `dependency-utils.js`
-| Implements functions for dealing with (potentially cyclic) dependencies
 
 | &emsp; `generate.js`
 | Entrypoint for generation
@@ -134,11 +140,17 @@
 | Tests various aspects of the type system's implementation
 
 
+| `detailed-code-organization.adoc`
+| This file
+
 | `generate-and-run-Runtime.sh`
 | A shell script that generates part of the Runtime's code, and then runs it
 
 | `initialize-storage.sh`
 | A shell script that initializes the backend's data store
+
+| `README.md`
+| Explanation of how to run the various scripts
 
 | `run-Domain-IDE.sh`
 | A shell script that build, and runs the Domain IDE

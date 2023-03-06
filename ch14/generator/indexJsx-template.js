@@ -5,6 +5,8 @@ const { attributesAffectedBy, isComputedFromExpression, referencedAttributesInVa
 const { asString, camelCase, indent, withFirstUpper } = require("./template-utils")
 
 
+const ccNameOf = (namedObject) => camelCase(namedObject.settings["name"])
+
 const jsOperatorFor = (operator) => {
     switch (operator) {
         case "of": return "* 0.01 *"
@@ -18,8 +20,6 @@ const dateRangeOperator2methodName = {
     "starts in": "startsInMonth"
 }
 
-const jsNameFor = (attribute) => camelCase(attribute.settings["name"])
-
 const expressionFor = (astObject, ancestors) => {
     if (!isAstObject(astObject)) {
         return `/* [GENERATION PROBLEM] value "${astObject}" isn't handled in expressionFor */`
@@ -28,7 +28,7 @@ const expressionFor = (astObject, ancestors) => {
     switch (astObject.concept) {
         case "Attribute Reference": {
             const targetAttribute = isAstReference(settings["attribute"]) && settings["attribute"].ref
-            return targetAttribute ? `this.${jsNameFor(targetAttribute)}` : `/* [GENERATION PROBLEM] attribute reference is undefined */`
+            return targetAttribute ? `this.${ccNameOf(targetAttribute)}` : `/* [GENERATION PROBLEM] attribute reference is undefined */`
         }
         case "Binary Operation": {
             const { operator } = settings
@@ -62,7 +62,7 @@ const defaultInitExpressionForType = (type) => {
 const initializationFor = (attribute) => {
     const { settings } = attribute
     const value = settings["value"]
-    return `${(jsNameFor(attribute))} = ${
+    return `${ccNameOf(attribute)} = ${
         isAstObject(value)
             ? expressionFor(value, [])
             : defaultInitExpressionForType(settings["type"])
@@ -75,7 +75,7 @@ const consequenceAsStatement = (consequence) => {
     }
     const { settings } = consequence
     switch (consequence.concept) {
-        case "Increment Effect": return `${jsNameFor(settings["attribute reference"].settings["attribute"].ref)} += ${expressionFor(settings["value"])}`
+        case "Increment Effect": return `${ccNameOf(settings["attribute reference"].settings["attribute"].ref)} += ${expressionFor(settings["value"])}`
         default: return `/* [GENERATION PROBLEM] value of concept "${consequence.concept}" isn't handled in consequenceAsStatement */`
     }
 }
@@ -92,7 +92,7 @@ const businessRuleAsStatement = (businessRule) => {
 const classField = (attribute, isAffected) => {
     const { settings } = attribute
     const value = settings["value"]
-    const fieldName = jsNameFor(attribute)
+    const fieldName = ccNameOf(attribute)
     if (isAffected) {
         return [
             `get ${fieldName}() {`,
@@ -115,7 +115,7 @@ const formFieldInput = (type, objectExpr, fieldName) => `<Input type="${type}" o
 const formFieldInputs = (objectExpr, attribute, isAffected) => {
     const { settings } = attribute
     const { type } = settings
-    const fieldName = jsNameFor(attribute)
+    const fieldName = ccNameOf(attribute)
     const isComputed = isAffected || isComputedFromExpression(attribute)
     switch (type) {
         case "amount": return "$ " + (isComputed ? `{${objectExpr}.${fieldName}.toFixed(2)}` : formFieldInput("number", objectExpr, fieldName))
@@ -132,18 +132,18 @@ const formField = (objectExpr, attribute, isAffected) => [
 ]
 
 const indexJsx = (recordType) => {
-    const name = jsNameFor(recordType)
-    const Name = withFirstUpper(name)
+    const name = ccNameOf(recordType)
+    const ucName = withFirstUpper(name)
     const { attributes, "business rules": businessRules } = recordType.settings
     const affectedAttributes = attributesAffectedBy(businessRules)
     const isAffected = (attribute) => affectedAttributes.indexOf(attribute) > -1
-    // Exercise 14.12 (commented-out again):
+    // Exercise 14.11 (commented-out again):
     // console.dir(affectedAttributes)
     // console.log(isAffected(attributes[2]))  // == "discount" attribute
 
     return [
         `import React from "react"
-import { render } from "react-dom"
+import { createRoot } from "react-dom/client"
 import { makeAutoObservable } from "mobx"
 import { observer } from "mobx-react"
 
@@ -152,7 +152,7 @@ import { DateRange } from "./dates"
 
 require("./styling.css")
 
-class ${Name} {`,
+class ${ucName} {`,
         indent(1)(
             (dependencyOrderOf(attributes, referencedAttributesInValueOf) || attributes)
                 .map((attribute) => classField(attribute, isAffected(attribute)))
@@ -161,7 +161,7 @@ class ${Name} {`,
         indent(2)(affectedAttributes.map((attribute) => `let ${initializationFor(attribute)}`)),
         indent(2)(businessRules.map(businessRuleAsStatement)),
         `        return {`,
-        indent(3)(affectedAttributes.map(jsNameFor)),
+        indent(3)(affectedAttributes.map(ccNameOf)),
         `        }
     }
     constructor() {
@@ -169,7 +169,7 @@ class ${Name} {`,
     }
 }
 
-const ${Name}Form = observer(({ ${name} }) => <form>`,
+const ${ucName}Form = observer(({ ${name} }) => <form>`,
         indent(1)(
             attributes.map(
                 (attribute) => formField(name, attribute, isAffected(attribute))
@@ -177,16 +177,12 @@ const ${Name}Form = observer(({ ${name} }) => <form>`,
         ),
         `</form>)
 
-const ${name} = new ${Name}()
+const ${name} = new ${ucName}()
 
-const App = observer(() => <div>
-    <${Name}Form ${name}={${name}} />
-</div>)
-
-render(
-    <App />,
-    document.getElementById("root")
-)
+createRoot(document.getElementById("root"))
+    .render(
+        <${ucName}Form ${name}={${name}} />
+    )
 `
     ]
 }

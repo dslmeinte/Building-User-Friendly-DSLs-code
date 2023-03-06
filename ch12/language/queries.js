@@ -1,37 +1,26 @@
-const { isAstObject, isAstReference } = require("../common/ast")
+const { allInstancesOf, isAstReference } = require("../common/ast")
+
 
 /**
- * Computes an array from merging all elements in left and right occurring uniquely.
+ * Computes all the attributes referenced anywhere within the given AST object and the AST hanging off of it.
+ * @param astObject An AST object.
+ * @return An array of attribute AST objects - possibly empty.
  */
-const mergeUniquely = (left, right) => [ ...new Set([ ...left, ...right ]) ]
+const referencedAttributesIn = (astObject) => [ ...new Set(     // The JS expression `[ ...new Set(<collection>)]` produces an array of the _unique_ objects within <collection>.
+    allInstancesOf("Attribute Reference", astObject)    // Find all __Attribute Reference__s.
+        .map((attributeReference) => attributeReference.settings["attribute"])  // Gather the values of their "`property`" setting.
+        .filter(isAstReference) // Filter out the ones which are actually AST references.
+        .map((refObject) => refObject.ref)  // Follow those references.
+) ]
+module.exports.referencedAttributesIn = referencedAttributesIn
+
 
 /**
  * Computes all the attributes referenced anywhere within the value of the given `attribute`.
  * @param attribute An AST object with concept label "Attribute".
  * @return An array of attribute AST objects - possibly empty.
  */
-const referencedAttributesInValueOf = (attribute) => {
-    const reffedAttribs = (expr) => {
-        if (!isAstObject(expr)) {
-            return []
-        }
-        const { settings } = expr
-        switch (expr.concept) {
-            case "Attribute Reference":
-                return isAstReference(settings["attribute"]) ? [ settings["attribute"].ref ] : []
-            case "Binary Operation":
-                return mergeUniquely(reffedAttribs(settings["left operand"]), reffedAttribs(settings["right operand"]))
-            case "Number":
-                return []
-            case "Parentheses":
-                return reffedAttribs(settings["sub"])
-            default:
-                throw new Error(`referencedAttributesIn(..) doesn't handle instances of the concept '${expr.concept}'`)
-        }
-    }
-
-    return reffedAttribs(attribute.settings["value"])
-}
+const referencedAttributesInValueOf = (attribute) => referencedAttributesIn(attribute.settings["value"])
 module.exports.referencedAttributesInValueOf = referencedAttributesInValueOf
 
 
@@ -55,9 +44,9 @@ module.exports.quotedNamesOf = quotedNamesOf
  * Computes whether the given `attribute` has a "computed as" value.
  * @param attribute An AST object with concept label "Attribute".
  */
-const isComputedAttribute = (attribute) => {
+const isComputedFromExpression = (attribute) => {
     const { settings } = attribute
     return settings["value"] && settings["value kind"] === "computed as"
 }
-module.exports.isComputedAttribute = isComputedAttribute
+module.exports.isComputedFromExpression = isComputedFromExpression
 

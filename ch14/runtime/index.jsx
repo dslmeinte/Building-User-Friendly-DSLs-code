@@ -56,3 +56,4 @@ createRoot(document.getElementById("root"))
     .render(
         <RentalForm rental={rental} />
     )
+

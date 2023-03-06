@@ -80,5 +80,4 @@ export const DropDownValue = observer(({ editState, className, options }) =>
             })}
         >{editState.value}</span>
 )
-// TODO  auto-open/-expand the select box
 

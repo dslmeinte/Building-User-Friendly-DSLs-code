@@ -12,7 +12,7 @@ const issuesFor = (astObject, ancestors) => {
     const { settings } = astObject
 
     const issueIfEmpty = (propertyName, message) => {
-        if (!isNonEmptyString(settings["name"])) {
+        if (!isNonEmptyString(settings[propertyName])) {
             issues.push(message)
         }
     }

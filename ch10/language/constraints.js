@@ -9,16 +9,23 @@ const issuesFor = (astObject, ancestors) => {
     const issues = []
     const { settings } = astObject
 
+    const issueIfEmpty = (propertyName, message) => {
+        if (!isNonEmptyString(settings[propertyName])) {
+            issues.push(message)
+        }
+    }
+    const issueIfUndefined = (propertyName, message) => {
+        if (settings[propertyName] === undefined) {
+            issues.push(message)
+        }
+    }
+
     // (Cases are in alphabetical order of concept labels:)
     switch (astObject.concept) {
 
         case "Attribute": {
-            if (!isNonEmptyString(settings["name"])) {
-                issues.push("An attribute must have a name")
-            }
-            if (settings["type"] === undefined) {
-                issues.push("An attribute must have a type")
-            }
+            issueIfEmpty("name", "An attribute must have a name")
+            issueIfUndefined("type", "An attribute must have a type")
             if (settings["value"] === placeholderAstObject) {
                 issues.push("The value of this attribute is not yet defined")
             }
@@ -57,16 +64,12 @@ const issuesFor = (astObject, ancestors) => {
         }
 
         case "Number": {
-            if (settings["value"] === undefined) {
-                issues.push("The number's value must be defined")
-            }
+            issueIfUndefined("value", "The number's value must be defined")
             break
         }
 
         case "Record Type": {
-            if (!isNonEmptyString(settings["name"])) {
-                issues.push("A record type must have a name")
-            }
+            issueIfEmpty("name", "A record type must have a name")
             break
         }
 

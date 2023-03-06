@@ -1,10 +1,7 @@
 const { readFileSync, writeFileSync } = require("fs")
 
-const options = { encoding: "utf8" }
-
-
 const writeString = (path, data) => {
-    writeFileSync(path, data, options)
+    writeFileSync(path, data)
 }
 module.exports.writeString = writeString
 
@@ -15,6 +12,7 @@ const writeJson = (path, data) => {
 module.exports.writeJson = writeJson
 
 
-const readJson = (path) => JSON.parse(readFileSync(path, options).toString())
+const readJson = (path) =>
+    JSON.parse(readFileSync(path, { encoding: "utf8" }).toString())
 module.exports.readJson = readJson
 

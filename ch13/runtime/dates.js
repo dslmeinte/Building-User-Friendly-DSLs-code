@@ -14,7 +14,6 @@ module.exports.formatDate = formatDate
 
 
 class DateRange {
-    // (Unfortunately, we have to deal with a syntax like this.)
     _from;
     _to;
     get from() {

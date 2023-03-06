@@ -21,4 +21,3 @@ describe("recursive functions defined as a `const` declaration", (_) => {
 
 })
 
-

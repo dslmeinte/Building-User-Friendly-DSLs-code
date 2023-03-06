@@ -6,12 +6,14 @@ const { allInstancesOf, isAstReference } = require("../common/ast")
  * @param astObject An AST object.
  * @return An array of attribute AST objects - possibly empty.
  */
-const referencedAttributesIn = (astObject) => [ ...new Set(     // `[ ...new Set(__<collection>__)]` ensures that we end up with an array of _unique_ AST object.
+const referencedAttributesIn = (astObject) => [ ...new Set(     // The JS expression `[ ...new Set(<collection>)]` produces an array of the _unique_ objects within <collection>.
     allInstancesOf("Attribute Reference", astObject)    // Find all __Attribute Reference__s.
         .map((attributeReference) => attributeReference.settings["attribute"])  // Gather the values of their "`property`" setting.
-        .filter(isAstReference) // Filter the ones which are actually AST references.
+        .filter(isAstReference) // Filter out the ones which are actually AST references.
         .map((refObject) => refObject.ref)  // Follow those references.
 ) ]
+module.exports.referencedAttributesIn = referencedAttributesIn
+
 
 /**
  * Computes all the attributes referenced anywhere within the value of the given `attribute`.

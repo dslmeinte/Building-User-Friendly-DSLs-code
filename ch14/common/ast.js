@@ -141,14 +141,9 @@ module.exports.replaceInMultipleValue = replaceInMultipleValue
  * Convenience/queries functions.
  */
 
-const firstAncestorOfConcept = (concept, ancestors) => ancestors.find((ancestor) => ancestor.concept === concept)
-module.exports.firstAncestorOfConcept = firstAncestorOfConcept
-// TODO  show this function already in chapter 5
-
-
 /**
- * Find all instances of the specified `concept` in the tree hanging off of the given `newAstObject`.
- * It also includes `newAstObject` itself if it has the specified `concept`.
+ * Find all instances of the specified `concept` in the tree hanging off of the given `astObject`.
+ * It also includes `astObject` itself if it has the specified `concept`.
  * The computation follows parent-child relations, but not reference relations.
  * @param concept A string containing the concept to search for.
  * @param astObject An AST object.
@@ -170,7 +165,8 @@ const allInstancesOf = (concept, astObject) => {
         if (Array.isArray(value)) {
             return value.forEach(visit)
         }
-        // Don't do anything for other values including AST reference objects.
+        // Don't do anything for other values
+        //  -- especially not for AST reference objects, or else we might trigger infinite recursion.
     }
 
     visit(astObject)
@@ -178,5 +174,4 @@ const allInstancesOf = (concept, astObject) => {
     return instances
 }
 module.exports.allInstancesOf = allInstancesOf
-// TODO  explain this function in chapter 9, as it's generically a very valuable function, in favor of an implementation that has to know about all expression concepts
 

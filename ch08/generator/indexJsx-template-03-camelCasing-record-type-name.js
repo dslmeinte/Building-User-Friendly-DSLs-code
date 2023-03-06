@@ -1,11 +1,14 @@
 const { camelCase, withFirstUpper } = require("./template-utils")
 
+
+const ccNameOf = (namedObject) => camelCase(namedObject.settings["name"])
+
 const indexJsx = (recordType) => {
-    const name = camelCase(recordType.settings["name"])
-    const Name = withFirstUpper(name)
+    const name = ccNameOf(recordType)
+    const ucName = withFirstUpper(name)
 
     return `import React from "react"
-import { render } from "react-dom"
+import { createRoot } from "react-dom/client"
 import { makeAutoObservable } from "mobx"
 import { observer } from "mobx-react"
 
@@ -14,7 +17,7 @@ import { DateRange } from "./dates"
 
 require("./styling.css")
 
-class ${Name} {
+class ${ucName} {
     rentalPeriod = new DateRange()
     rentalPriceBeforeDiscount = 0.0
     discount = 0
@@ -42,14 +45,10 @@ const RentalForm = observer(({ rental }) => <form>
 
 const rental = new Rental()
 
-const App = observer(() => <div>
-    <RentalForm rental={rental} />
-</div>)
-
-render(
-    <App />,
-    document.getElementById("root")
-)
+createRoot(document.getElementById("root"))
+    .render(
+        <RentalForm rental={rental} />
+    )
 `
 }
 
