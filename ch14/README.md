@@ -12,12 +12,12 @@
 
 * [DSL-*aspecific* code in shared use by front-, and backend, and the generator](./common).
 
-* [The frontend](./frontend). 
+* [The frontend](./frontend).
     To bundle with Parcel, to `dist/`:
 
         $ npx parcel frontend/index.html
 
-      The directory `dist/` is served statically by the backend.
+    The directory `dist/` is served statically by the backend.
 
 * [The code generator](./generator).
     Run the standalone code generator as follows:
@@ -64,11 +64,13 @@ The steps above achieve the following:
 4. Start the backend (an Express server), serving the contents, as well as the frontend from `dist/`.
 
 The Domain IDE can now be accessed on [`http://localhost:8080/`](http://localhost:8080/).
-
+_Note:_ the first step initializes the file `backend/data/contents.json`, without making a backup if it already exists!
 Alternatively, run:
 
     $ ./initialize-storage.sh
     $ ./run-Domain-IDE.sh
+
+The latter script relies on an `open` command that opens a browser on HTML files.
 
 
 ### The generator and Runtime
