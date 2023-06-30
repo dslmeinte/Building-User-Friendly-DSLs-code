@@ -1,7 +1,7 @@
 const { makeAutoObservable } = require("mobx")
 
-const weekDays = [ "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" ]
-module.exports.weekDays = weekDays
+const weekdays = [ "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" ]
+module.exports.weekdays = weekdays
 const months = [ "January", "February", "March", "April", "May", "June", "July", "August",
                     "September", "October", "November", "December"
                 ]
@@ -50,7 +50,7 @@ class DateRange {
         this._to = !!toStr ? new Date(toStr) : now
     }
     containsWeekDay(dayName) {
-        const dayNr = weekDays.indexOf(dayName)
+        const dayNr = weekdays.indexOf(dayName)
         let currentDate = new Date(this._from)   // (copy)
         while (currentDate < this._to && currentDate.getDay() !== dayNr) {
             currentDate.setDate(currentDate.getDate() + 1)

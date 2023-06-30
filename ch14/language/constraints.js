@@ -3,7 +3,7 @@ const { cycleWith } = require("../common/dependency-utils")
 const { attributesAffectedBy, quotedNamesOf, referencedAttributesIn, referencedAttributesInValueOf } = require("./queries")
 const { camelCase } = require("../generator/template-utils")
 const { areEqual, builtInTypes, isNumberType, typeAsText, typeOf } = require("./type-system")
-const { isMonth, isWeekDay } = require("./time-units")
+const { isMonth, isWeekday } = require("./time-units")
 
 
 const isNonEmptyString = (value) => typeof value === "string" && value.trim().length > 0
@@ -113,8 +113,8 @@ const issuesFor = (astObject, ancestors) => {
             if (operator && timeUnit) {
                 switch (operator) {
                     case "contains a": {
-                        if (!isWeekDay(timeUnit)) {
-                            issues.push(`The right-hand side of this operator must be a week day`)
+                        if (!isWeekday(timeUnit)) {
+                            issues.push(`The right-hand side of this operator must be a weekday`)
                         }
                         break
                     }

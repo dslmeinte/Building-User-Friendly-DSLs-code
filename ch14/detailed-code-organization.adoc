@@ -51,7 +51,7 @@
 | Contains CSS-related utility/convenience functions
 
 | &emsp; `index.html`
-| The frontend's entrypoint that "`kicks off`" `index.jsx`
+| The frontend's entry point that "`kicks off`" `index.jsx`
 
 | &emsp; `index.jsx`
 | Implements the frontend as a React SPA
@@ -124,7 +124,7 @@
 | Implements a `DateRange` class and date functions
 
 | &emsp; `index.html`
-| The entrypoint for the Runtime UI that "`kicks off`" `index.jsx`
+| The entry point for the Runtime UI that "`kicks off`" `index.jsx`
 
 | &emsp; `index.jsx`
 | Implements the Runtime UI

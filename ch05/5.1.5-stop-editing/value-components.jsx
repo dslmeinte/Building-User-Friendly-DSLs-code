@@ -8,7 +8,7 @@ export const TextValue = observer(({ editState }) =>
         ? <input type="text"
             defaultValue={editState.value}
             autoFocus={true}
-            // React to loosing focus to exit editing:
+            // React to losing focus to exit editing:
             onBlur={action((_) => {
                 editState.inEdit = false
             })}
