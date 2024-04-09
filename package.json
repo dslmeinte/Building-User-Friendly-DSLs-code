@@ -1,16 +1,16 @@
 {
-  "name": "Business-Friendly-DSLs-code",
+  "name": "Building-User-Friendly-DSLs-code",
   "version": "0.11.0-dev",
-  "description": "All the code from the book “Business-Friendly DSLs” by Meinte Boersma for Manning Publications.",
+  "description": "All the code from the book “Building User-Friendly DSLs” by Meinte Boersma for Manning Publications.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dslmeinte/Business-Friendly-DSLs-code.git"
+    "url": "git+https://github.com/dslmeinte/Building-User-Friendly-DSLs-code.git"
   },
   "author": "Meinte Boersma (for Manning Publications)",
   "bugs": {
-    "url": "https://github.com/dslmeinte/Business-Friendly-DSLs-code/issues"
+    "url": "https://github.com/dslmeinte/Building-User-Friendly-DSLs-code/issues"
   },
-  "homepage": "https://www.manning.com/books/business-friendly-dsls",
+  "homepage": "https://www.manning.com/books/building-user-friendly-dsls",
   "dependencies": {
     "express": "^4.18.2",
     "mobx": "^6.8.0",
