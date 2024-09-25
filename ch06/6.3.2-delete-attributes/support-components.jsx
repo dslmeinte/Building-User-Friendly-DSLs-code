@@ -33,7 +33,7 @@ export const AstObjectUiWrapper = observer(({ className, astObject, deleteAstObj
                     deleteAstObject()
                 }
             }
-            // Exercise 6.10 (item 2):
+            // Exercise 6.12 (item 2):
             if (event.key === "Escape") {
                 deselect()
             }

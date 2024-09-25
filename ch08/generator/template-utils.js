@@ -13,7 +13,7 @@ module.exports.camelCase = camelCase
 const withFirstUpper = (str) => str.charAt(0).toUpperCase() + str.substring(1)
 module.exports.withFirstUpper = withFirstUpper
 
-// The following is part of the reference solution for the third exercise of §8.4.3:
+// The following is part of the reference solution for item 3 of exercise 8.6 in § 8.4.3:
 const flattenTruthies = (nestedStrings) => nestedStrings.flat(Infinity).filter((x) => !!x)
 
 // The following is part of a reference solution for the last part of Exercise 8.4 (of section § 8.4.3):

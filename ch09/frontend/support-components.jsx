@@ -18,7 +18,7 @@ document.addEventListener("mousedown", action((event) => {
 }))
 
 
-// with Refactored-out traces for 6th item in Exercise of §9.1.3:
+// with Refactored-out traces for 2nd item of Exercise 9.5 (of § 9.2.2):
 export const AstObjectUiWrapper = observer(({ className, astObject, deleteAstObject, issues, children }) => {
     let hoverText = ""
     const hasIssues = issues.length > 0

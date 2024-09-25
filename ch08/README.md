@@ -6,7 +6,7 @@
 * [The backend](./backend).
     The only difference with the backend code from chapter 7 is the addition of an endpoint [`/ast/indexJsx`](http://localhost:8080/ast/indexJsx).
     This returns the textual contents of [`src/runtime/index.jsx`](./src/runtime/index.jsx), as generated from the backend's current contents.
-    This is the solution to the last exercise.
+    This is the reference solution to item 2 of exercise 8.10 in § 8.4.4.
 
     Run this as follows:
 
@@ -40,7 +40,7 @@
         $ node generator/generate-retrieve-ast-from-backend.js
 
     to generate [`src/runtime/index.jsx`](./src/runtime/index.jsx) from an AST stored in a running backend.
-    This is the solution to the second-last exercise.
+    This is the reference solution to item 1 of exercise 8.10 in § 8.4.4.
 
 * [Initialization](./init).
     Code to perform initializations:
